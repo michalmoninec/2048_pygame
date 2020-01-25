@@ -22,7 +22,7 @@ class Game:
             for r in range (0, self.boardSize):
               pygame.draw.rect(surf,colour_dict[self.matrix[c][r]],(r*self.tileSize,c*self.tileSize,self.tileSize,self.tileSize))
               if self.matrix[c][r] != 0:
-                label = self.myfont.render(str(self.matrix[c][r]), 1, (255,255,255))
+                label = self.myfont.render(str(self.matrix[c][r]), 1, (0,0,0))
                 surf.blit(label, (r*(400/self.boardSize) + 10, c*(400/self.boardSize) + 10))  
         pygame.display.update()
 
@@ -240,6 +240,12 @@ class Game:
                                 matice_[i][j-1] = 0
                                 # matice.hodnota += matice_[i][j]
             self.updateMatrix(k,matice_)
+
+    def resetMatrix(self, surf):
+        self.matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        self.startRandom = True
+        self.placeRandomTile()
+        self.printMatrix(surf)
 
     def run(self,dir,surf):
         if self.checkGame(self.matrix) and not self.gameOver:
