@@ -16,6 +16,7 @@ class Game:
         self.start = False
         self.gameOver = False
         self.reset = False
+        self.score = 0
 
     def printMatrix(self,surf):
         for c in range(0,self.boardSize):
@@ -35,42 +36,37 @@ class Game:
         print('Matice uz je plna!')
         return False
         
-        
-
-
-
-    def placeRandomTile(self):
-        if self.isThereSpace():
-            while self.startRandom == True:
-                i = random.randint(0,3)
-                j = random.randint(0,3)
-                if self.matrix[i][j] == 0:
-                    rand = random.randint(0,100)
-                    if rand>10:
-                        self.matrix[i][j] = 2
-                        self.startRandom = False
-                        break
-                    else:
-                        self.matrix[i][j] = 4
-                        self.startRandom = False
-                        break
-        
+    def placeRandomTile(self, matrix):
+        # if self.isThereSpace():
+        while self.startRandom == True:
+            i = random.randint(0,3)
+            j = random.randint(0,3)
+            if matrix[i][j] == 0:
+                rand = random.randint(0,100)
+                if rand>10:
+                    matrix[i][j] = 2
+                    self.startRandom = False
+                    break
+                else:
+                    matrix[i][j] = 4
+                    self.startRandom = False
+                    break
 
     def move(self, dir):
         if dir == pygame.K_UP:
-            print('Nahoru')
+            # print('Nahoru')
             self.startRandom = True
             return 0
         if dir == pygame.K_DOWN:
-            print('Dolu')
+            # print('Dolu')
             self.startRandom = True
             return 2
         if dir == pygame.K_RIGHT:
-            print('Doprava')
+            # print('Doprava')
             self.startRandom = True
             return 3
         if dir == pygame.K_LEFT:
-            print('Doleva')
+            # print('Doleva')
             self.startRandom = True
             return 1
 
@@ -118,6 +114,7 @@ class Game:
                         if (matrix[i][j] == matrix[i][j-1] and matrix[i][j]!=0) or (matrix[i][j]==0 and sum(matrix[i][:j])>0):
                             canMove3 = True
         if (canMove0 == False and canMove1 == False and canMove2 == False and canMove3 == False):
+            # self.gameOver = True
             return False
         else:
             return True
@@ -134,6 +131,8 @@ class Game:
                         return True
                         canMoveUP = True
             self.transpose(matrix)
+            return False
+            
 
 
         elif k == 1: #doleva
@@ -142,6 +141,7 @@ class Game:
                     if (matrix[i][j] == matrix[i][j+1] and matrix[i][j]!=0) or (matrix[i][j]==0 and sum(matrix[i][j:])>0):
                         return True
                         canMoveLEFT = True
+            return False
 
 
         elif k == 2: #dolu
@@ -153,6 +153,7 @@ class Game:
                         return True
                         canMoveDOWN = True
             self.transpose(matrix)
+            return False
 
 
         elif k == 3: #doprava
@@ -161,9 +162,9 @@ class Game:
                     if (matrix[i][j] == matrix[i][j-1] and matrix[i][j]!=0) or (matrix[i][j]==0 and sum(matrix[i][:j])>0):
                         return True
                         canMoveRIGHT = True
-
-        else:
             return False
+
+        
 
     def updateMatrix(self,k,matice_):
 
@@ -176,6 +177,7 @@ class Game:
                             matice_[i][k] = matice_[i][k+1]
                         matice_[i][3]=0
             self.transpose(matice_)
+
         elif k==1: #doleva
             for i in range (0,4):
                 for j in range (0,3):
@@ -211,6 +213,7 @@ class Game:
                     if matice_[i][j] == matice_[i][j+1] and matice_[i][j]!=0:
                             matice_[i][j] = matice_[i][j] * 2
                             matice_[i][j+1] = 0
+                            self.score += matice_[i][j]
                             # matice.hodnota += matice_[i][j]
             self.transpose(matice_)
             self.updateMatrix(k,matice_)
@@ -220,6 +223,7 @@ class Game:
                     if matice_[i][j] == matice_[i][j+1] and matice_[i][j]!=0:
                             matice_[i][j] = matice_[i][j] * 2
                             matice_[i][j+1] = 0
+                            self.score += matice_[i][j]
                             # matice.hodnota += matice_[i][j]
             self.updateMatrix(k,matice_)
         if k == 2: #dolu
@@ -229,6 +233,7 @@ class Game:
                     if matice_[i][j] == matice_[i][j-1] and matice_[i][j]!=0:
                             matice_[i][j] = matice_[i][j] * 2
                             matice_[i][j-1] = 0
+                            self.score += matice_[i][j]
                             # matice.hodnota += matice_[i][j]
             self.transpose(matice_)
             self.updateMatrix(k,matice_)
@@ -238,13 +243,14 @@ class Game:
                     if matice_[i][j] == matice_[i][j-1] and matice_[i][j]!=0:
                                 matice_[i][j] = matice_[i][j] * 2
                                 matice_[i][j-1] = 0
+                                self.score += matice_[i][j]
                                 # matice.hodnota += matice_[i][j]
             self.updateMatrix(k,matice_)
 
     def resetMatrix(self, surf):
         self.matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
         self.startRandom = True
-        self.placeRandomTile()
+        self.placeRandomTile(self.matrix)
         self.printMatrix(surf)
 
     def run(self,dir,surf):
@@ -256,8 +262,9 @@ class Game:
                 #checkDirection
                 #move
                 #merge
-                self.placeRandomTile()
+                self.placeRandomTile(self.matrix)
                 self.printMatrix(surf)
+                print("Score is: ", self.score)
         else:
             self.start = False
             self.gameOver = True
