@@ -16,9 +16,12 @@ class MonteCarlo():
         
 
     def getDirection(self,matrix,game):
+        
+        trueScore = copy.deepcopy(game.score)
         for i  in range (self.pocetIteraci+1):
             k = random.randint(0,3) #smer, kterym se ma hra posunout
             interMatrix = copy.deepcopy(matrix)
+            # print("score is: ", trueScore)
             while (game.checkIfCanMove(k,interMatrix)) == False: #pokud vyberu smer, kterym nemuzu, vyberu jiny smer
                 k = random.randint(0,3)
 
@@ -53,5 +56,6 @@ class MonteCarlo():
         self.scoreDown = [0]
         self.scoreLeft = [0]
         self.scoreRight = [0]
+        game.score = trueScore
         return direction
 

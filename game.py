@@ -17,6 +17,7 @@ class Game:
         self.gameOver = False
         self.reset = False
         self.score = 0
+        self.isWin = False
 
     def printMatrix(self,surf):
         for c in range(0,self.boardSize):
@@ -253,18 +254,35 @@ class Game:
         self.placeRandomTile(self.matrix)
         self.printMatrix(surf)
 
+    def isScore(self,surf):
+        for i in range(0, self.boardSize):
+            for j in range(0,self.boardSize):
+                if not self.isWin:
+                    if self.matrix[i][j] == 8:
+                        print("Dosahnul jsi 8")
+                        self.isWin = True
+                        return True
+                    
+
+
     def run(self,dir,surf):
         if self.checkGame(self.matrix) and not self.gameOver:
         # print(self.move(dir))
             if self.checkIfCanMove(self.move(dir),self.matrix):
                 self.updateMatrix(self.move(dir),self.matrix)
                 self.mergeTiles(self.move(dir),self.matrix)
-                #checkDirection
-                #move
-                #merge
                 self.placeRandomTile(self.matrix)
                 self.printMatrix(surf)
+                
                 print("Score is: ", self.score)
+                
+                if self.isScore(surf):
+                    myfont = pygame.font.SysFont("monospace", 30, bold = 'true')
+                    gameOverButton = pygame.draw.rect(surf,(255,255,255),(100,170, 210, 60))
+                    label = myfont.render("YOU WIN", 1, (0,0,255))
+                    surf.blit(label,(110, 185, 100, 60))
+                    pygame.display.flip()
+                    time.sleep(2)
         else:
             self.start = False
             self.gameOver = True

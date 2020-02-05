@@ -56,6 +56,7 @@ class Menu():
             game.resetMatrix(surf)
             game.score = 0
             pygame.display.flip()
+            game.isWin = False
             if monteCarlo.screen:
                 monteCarlo.start = True
             
@@ -86,11 +87,13 @@ class Menu():
 def main():
     menu = Menu()
     pygame.init()
-    pygame.display.set_caption("2048")
+    game = Game()
+    scoreView = "2048 score: " + str(game.score)
+    pygame.display.set_caption(scoreView)
     screen = pygame.display.set_mode((400,440))
     menu.startMenu(screen)
     clock = pygame.time.Clock()
-    game = Game()
+    
     monteCarlo = MonteCarlo()
     hasPrinted = False
 
@@ -101,6 +104,8 @@ def main():
                 hasPrinted = True
                 game.placeRandomTile(game.matrix)
             game.printMatrix(screen)
+            scoreView = "2048 score: " + str(game.score)
+            pygame.display.set_caption(scoreView)
             pygame.display.flip()
             
         if game.gameOver:
@@ -126,8 +131,13 @@ def main():
                     game.startRandom = True
                     game.placeRandomTile(game.matrix)
                     game.printMatrix(screen)
+                    scoreView = "2048 score: " + str(game.score)
+                    pygame.display.set_caption(scoreView)
+                    # game.score = 0
                     pygame.display.flip()
-                game.score = 0
+                # game.score = 0
+                
+
                 game.gameOver = True
 
         pygame.display.flip()
