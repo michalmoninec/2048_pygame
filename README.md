@@ -1,3 +1,5 @@
-2048_pygame
+# 2048_pygame
+
 old school project
-needs massive refactoring
+
+## needs massive refactoring
