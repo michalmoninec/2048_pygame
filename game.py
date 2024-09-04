@@ -2,13 +2,13 @@ import pygame, sys, time
 from pygame.locals import *
 import random
 import keyboard
-from colours import *
+from assets.colours import colour_dict, get_colour
 import random
 
 
 class Game:
     def __init__(self):
-        self.matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        self.matrix = [[0 for _ in range(4)] for _ in range(4)]
         self.board_size = 4
         self.myfont = pygame.font.SysFont("monospace", 30, bold="true")
         self.tile_size = 100
@@ -285,7 +285,7 @@ class Game:
                 self.place_random_tile(self.matrix)
                 self.print_matrix(surf)
 
-                print("Score is: ", self.score)
+                # print("Score is: ", self.score)
 
                 if self.is_score(surf):
                     my_font = pygame.font.SysFont("monospace", 30, bold="true")
