@@ -9,27 +9,27 @@ import random
 class Game:
     def __init__(self):
         self.matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-        self.boardSize = 4
+        self.board_size = 4
         self.myfont = pygame.font.SysFont("monospace", 30, bold="true")
-        self.tileSize = 100
-        self.startRandom = True
+        self.tile_size = 100
+        self.start_random = True
         self.start = False
-        self.gameOver = False
+        self.game_over = False
         self.reset = False
         self.score = 0
-        self.isWin = False
+        self.is_win = False
 
-    def printMatrix(self, surf):
-        for c in range(0, self.boardSize):
-            for r in range(0, self.boardSize):
+    def print_matrix(self, surf):
+        for c in range(0, self.board_size):
+            for r in range(0, self.board_size):
                 pygame.draw.rect(
                     surf,
                     colour_dict[self.matrix[c][r]],
                     (
-                        r * self.tileSize,
-                        c * self.tileSize,
-                        self.tileSize,
-                        self.tileSize,
+                        r * self.tile_size,
+                        c * self.tile_size,
+                        self.tile_size,
+                        self.tile_size,
                     ),
                 )
                 if self.matrix[c][r] != 0:
@@ -37,53 +37,47 @@ class Game:
                     surf.blit(
                         label,
                         (
-                            r * (400 / self.boardSize) + 10,
-                            c * (400 / self.boardSize) + 10,
+                            r * (400 / self.board_size) + 10,
+                            c * (400 / self.board_size) + 10,
                         ),
                     )
         pygame.display.update()
 
-    def isThereSpace(self):
+    def is_there_space(self):
         count = 0
-        for i in range(self.boardSize):
-            for j in range(self.boardSize):
+        for i in range(self.board_size):
+            for j in range(self.board_size):
                 if self.matrix[i][j] == 0:
                     return True
-        print("Matice uz je plna!")
         return False
 
-    def placeRandomTile(self, matrix):
-        # if self.isThereSpace():
-        while self.startRandom == True:
+    def place_random_tile(self, matrix):
+        while self.start_random == True:
             i = random.randint(0, 3)
             j = random.randint(0, 3)
             if matrix[i][j] == 0:
                 rand = random.randint(0, 100)
                 if rand > 10:
                     matrix[i][j] = 2
-                    self.startRandom = False
+                    self.start_random = False
                     break
                 else:
                     matrix[i][j] = 4
-                    self.startRandom = False
+                    self.start_random = False
                     break
 
     def move(self, dir):
         if dir == pygame.K_UP:
-            # print('Nahoru')
-            self.startRandom = True
+            self.start_random = True
             return 0
         if dir == pygame.K_DOWN:
-            # print('Dolu')
-            self.startRandom = True
+            self.start_random = True
             return 2
         if dir == pygame.K_RIGHT:
-            # print('Doprava')
-            self.startRandom = True
+            self.start_random = True
             return 3
         if dir == pygame.K_LEFT:
-            # print('Doleva')
-            self.startRandom = True
+            self.start_random = True
             return 1
 
     def transpose(self, A):
@@ -92,223 +86,216 @@ class Game:
             for j in range(i + 1, N):
                 A[i][j], A[j][i] = A[j][i], A[i][j]
 
-    def checkGame(self, matrix):
-        canMove0 = False
-        canMove1 = False
-        canMove2 = False
-        canMove3 = False
+    def check_game(self, matrix):
+        can_move_up = False
+        can_move_left = False
+        can_move_down = False
+        can_move_right = False
         for k in range(4):
-            if k == 0:  # nahoru
+            if k == 0:  # up
                 self.transpose(matrix)
-                for i in range(0, self.boardSize):
-                    for j in range(0, self.boardSize - 1):
+                for i in range(0, self.board_size):
+                    for j in range(0, self.board_size - 1):
                         if (matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0) or (
                             matrix[i][j] == 0 and sum(matrix[i][j:]) > 0
                         ):
                             # return True
-                            canMove0 = True
+                            can_move_up = True
                 self.transpose(matrix)
 
-            elif k == 1:  # doleva
-                for i in range(0, self.boardSize):
-                    for j in range(0, self.boardSize - 1):
+            elif k == 1:  # left
+                for i in range(0, self.board_size):
+                    for j in range(0, self.board_size - 1):
                         if (matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0) or (
                             matrix[i][j] == 0 and sum(matrix[i][j:]) > 0
                         ):
-                            canMove1 = True
+                            can_move_left = True
 
-            elif k == 2:  # dolu
+            elif k == 2:  # down
                 self.transpose(matrix)
-                for i in range(0, self.boardSize):
-                    for j in range(self.boardSize - 1, 0, -1):
+                for i in range(0, self.board_size):
+                    for j in range(self.board_size - 1, 0, -1):
                         if (matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0) or (
                             matrix[i][j] == 0 and sum(matrix[i][:j]) > 0
                         ):
-                            canMove2 = True
+                            can_move_down = True
                 self.transpose(matrix)
 
-            elif k == 3:  # doprava
-                for i in range(0, self.boardSize):
-                    for j in range(self.boardSize - 1, 0, -1):
+            elif k == 3:  # right
+                for i in range(0, self.board_size):
+                    for j in range(self.board_size - 1, 0, -1):
                         if (matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0) or (
                             matrix[i][j] == 0 and sum(matrix[i][:j]) > 0
                         ):
-                            canMove3 = True
+                            can_move_right = True
         if (
-            canMove0 == False
-            and canMove1 == False
-            and canMove2 == False
-            and canMove3 == False
+            can_move_up == False
+            and can_move_left == False
+            and can_move_down == False
+            and can_move_right == False
         ):
             # self.gameOver = True
             return False
         else:
             return True
 
-    def checkIfCanMove(self, direction, matrix):
+    def check_if_can_move(self, direction, matrix):
         k = direction
 
-        if k == 0:  # nahoru
+        if k == 0:  # up
             self.transpose(matrix)
-            for i in range(0, self.boardSize):
-                for j in range(0, self.boardSize - 1):
+            for i in range(0, self.board_size):
+                for j in range(0, self.board_size - 1):
                     if (matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0) or (
                         matrix[i][j] == 0 and sum(matrix[i][j:]) > 0
                     ):
                         self.transpose(matrix)
                         return True
-                        canMoveUP = True
+
             self.transpose(matrix)
             return False
 
-        elif k == 1:  # doleva
-            for i in range(0, self.boardSize):
-                for j in range(0, self.boardSize - 1):
+        elif k == 1:  # left
+            for i in range(0, self.board_size):
+                for j in range(0, self.board_size - 1):
                     if (matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0) or (
                         matrix[i][j] == 0 and sum(matrix[i][j:]) > 0
                     ):
                         return True
-                        canMoveLEFT = True
             return False
 
-        elif k == 2:  # dolu
+        elif k == 2:  # down
             self.transpose(matrix)
-            for i in range(0, self.boardSize):
-                for j in range(self.boardSize - 1, 0, -1):
+            for i in range(0, self.board_size):
+                for j in range(self.board_size - 1, 0, -1):
                     if (matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0) or (
                         matrix[i][j] == 0 and sum(matrix[i][:j]) > 0
                     ):
                         self.transpose(matrix)
                         return True
-                        canMoveDOWN = True
             self.transpose(matrix)
             return False
 
-        elif k == 3:  # doprava
-            for i in range(0, self.boardSize):
-                for j in range(self.boardSize - 1, 0, -1):
+        elif k == 3:  # right
+            for i in range(0, self.board_size):
+                for j in range(self.board_size - 1, 0, -1):
                     if (matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0) or (
                         matrix[i][j] == 0 and sum(matrix[i][:j]) > 0
                     ):
                         return True
-                        canMoveRIGHT = True
             return False
 
-    def updateMatrix(self, k, matice_):
+    def update_matrix(self, dir, matrix):
 
-        if k == 0:  # nahoru
-            self.transpose(matice_)
+        if dir == 0:  # up
+            self.transpose(matrix)
             for i in range(0, 4):
                 for j in range(0, 3):
-                    while matice_[i][j] == 0 and sum(matice_[i][j:]) > 0:
-                        for k in range(j, 3):
-                            matice_[i][k] = matice_[i][k + 1]
-                        matice_[i][3] = 0
-            self.transpose(matice_)
+                    while matrix[i][j] == 0 and sum(matrix[i][j:]) > 0:
+                        for dir in range(j, 3):
+                            matrix[i][dir] = matrix[i][dir + 1]
+                        matrix[i][3] = 0
+            self.transpose(matrix)
 
-        elif k == 1:  # doleva
+        elif dir == 1:  # left
             for i in range(0, 4):
                 for j in range(0, 3):
-                    while matice_[i][j] == 0 and sum(matice_[i][j:]) > 0:
-                        for k in range(j, 3):
-                            matice_[i][k] = matice_[i][k + 1]
-                        matice_[i][3] = 0
+                    while matrix[i][j] == 0 and sum(matrix[i][j:]) > 0:
+                        for dir in range(j, 3):
+                            matrix[i][dir] = matrix[i][dir + 1]
+                        matrix[i][3] = 0
 
-        elif k == 2:  # dolu
-            self.transpose(matice_)
+        elif dir == 2:  # down
+            self.transpose(matrix)
             for i in range(0, 4):
                 for j in range(3, -1, -1):
-                    while matice_[i][j] == 0 and sum(matice_[i][:j]) > 0:
-                        for k in range(j, -1, -1):
-                            matice_[i][k] = matice_[i][k - 1]
-                        matice_[i][0] = 0
-            self.transpose(matice_)
+                    while matrix[i][j] == 0 and sum(matrix[i][:j]) > 0:
+                        for dir in range(j, -1, -1):
+                            matrix[i][dir] = matrix[i][dir - 1]
+                        matrix[i][0] = 0
+            self.transpose(matrix)
 
-        elif k == 3:  # vpravo
+        elif dir == 3:  # right
             for i in range(0, 4):
                 for j in range(3, 0, -1):
-                    while matice_[i][j] == 0 and sum(matice_[i][:j]) > 0:
-                        for k in range(j, -1, -1):
-                            matice_[i][k] = matice_[i][k - 1]
-                        matice_[i][0] = 0
+                    while matrix[i][j] == 0 and sum(matrix[i][:j]) > 0:
+                        for dir in range(j, -1, -1):
+                            matrix[i][dir] = matrix[i][dir - 1]
+                        matrix[i][0] = 0
 
-    def mergeTiles(self, k, matice_):
-        if k == 0:  # nahoru
+    def merge_tiles(self, k, matice_):
+        if k == 0:  # up
             self.transpose(matice_)
-            for i in range(0, self.boardSize):
-                for j in range(0, self.boardSize - 1):
+            for i in range(0, self.board_size):
+                for j in range(0, self.board_size - 1):
                     if matice_[i][j] == matice_[i][j + 1] and matice_[i][j] != 0:
                         matice_[i][j] = matice_[i][j] * 2
                         matice_[i][j + 1] = 0
                         self.score += matice_[i][j]
-                        # matice.hodnota += matice_[i][j]
             self.transpose(matice_)
-            self.updateMatrix(k, matice_)
-        if k == 1:  # doleva
-            for i in range(0, self.boardSize):
-                for j in range(0, self.boardSize - 1):
+            self.update_matrix(k, matice_)
+        if k == 1:  # left
+            for i in range(0, self.board_size):
+                for j in range(0, self.board_size - 1):
                     if matice_[i][j] == matice_[i][j + 1] and matice_[i][j] != 0:
                         matice_[i][j] = matice_[i][j] * 2
                         matice_[i][j + 1] = 0
                         self.score += matice_[i][j]
-                        # matice.hodnota += matice_[i][j]
-            self.updateMatrix(k, matice_)
-        if k == 2:  # dolu
+            self.update_matrix(k, matice_)
+        if k == 2:  # down
             self.transpose(matice_)
-            for i in range(0, self.boardSize):
-                for j in range(self.boardSize - 1, -1, -1):
+            for i in range(0, self.board_size):
+                for j in range(self.board_size - 1, -1, -1):
                     if matice_[i][j] == matice_[i][j - 1] and matice_[i][j] != 0:
                         matice_[i][j] = matice_[i][j] * 2
                         matice_[i][j - 1] = 0
                         self.score += matice_[i][j]
-                        # matice.hodnota += matice_[i][j]
             self.transpose(matice_)
-            self.updateMatrix(k, matice_)
-        if k == 3:  # doprava
-            for i in range(0, self.boardSize):
-                for j in range(self.boardSize - 1, -1, -1):
+            self.update_matrix(k, matice_)
+        if k == 3:  # right
+            for i in range(0, self.board_size):
+                for j in range(self.board_size - 1, -1, -1):
                     if matice_[i][j] == matice_[i][j - 1] and matice_[i][j] != 0:
                         matice_[i][j] = matice_[i][j] * 2
                         matice_[i][j - 1] = 0
                         self.score += matice_[i][j]
-                        # matice.hodnota += matice_[i][j]
-            self.updateMatrix(k, matice_)
+            self.update_matrix(k, matice_)
 
-    def resetMatrix(self, surf):
+    def reset_matrix(self, surf):
         self.matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-        self.startRandom = True
-        self.placeRandomTile(self.matrix)
-        self.printMatrix(surf)
+        self.start_random = True
+        self.place_random_tile(self.matrix)
+        self.print_matrix(surf)
 
-    def isScore(self, surf):
-        for i in range(0, self.boardSize):
-            for j in range(0, self.boardSize):
-                if not self.isWin:
+    def is_score(self, surf):
+        for i in range(0, self.board_size):
+            for j in range(0, self.board_size):
+                if not self.is_win:
                     if self.matrix[i][j] == 8:
                         print("Dosahnul jsi 8")
-                        self.isWin = True
+                        self.is_win = True
                         return True
 
-    def run(self, dir, surf):
-        if self.checkGame(self.matrix) and not self.gameOver:
+    def run_game(self, dir, surf):
+        if self.check_game(self.matrix) and not self.game_over:
             # print(self.move(dir))
-            if self.checkIfCanMove(self.move(dir), self.matrix):
-                self.updateMatrix(self.move(dir), self.matrix)
-                self.mergeTiles(self.move(dir), self.matrix)
-                self.placeRandomTile(self.matrix)
-                self.printMatrix(surf)
+            if self.check_if_can_move(self.move(dir), self.matrix):
+                self.update_matrix(self.move(dir), self.matrix)
+                self.merge_tiles(self.move(dir), self.matrix)
+                self.place_random_tile(self.matrix)
+                self.print_matrix(surf)
 
                 print("Score is: ", self.score)
 
-                if self.isScore(surf):
-                    myfont = pygame.font.SysFont("monospace", 30, bold="true")
-                    gameOverButton = pygame.draw.rect(
+                if self.is_score(surf):
+                    my_font = pygame.font.SysFont("monospace", 30, bold="true")
+                    game_over_button = pygame.draw.rect(
                         surf, (255, 255, 255), (100, 170, 210, 60)
                     )
-                    label = myfont.render("YOU WIN", 1, (0, 0, 255))
+                    label = my_font.render("YOU WIN", 1, (0, 0, 255))
                     surf.blit(label, (110, 185, 100, 60))
                     pygame.display.flip()
                     time.sleep(2)
         else:
             self.start = False
-            self.gameOver = True
+            self.game_over = True

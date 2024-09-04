@@ -1,142 +1,140 @@
 import pygame, sys, os
 
-# import pygameMenu
-from game import *
-from monte_carlo import *
+
+from game import Game
+from monte_carlo import MonteCarlo
 import time
 
 
-# play, mcts, you vs. stupid mcts
-
-
 class Menu:
-    def startMenu(self, surf):
+    def start_menu(self, surf):
         myfont = pygame.font.SysFont("monospace", 30, bold="true")
         surf.fill((0, 0, 0))
 
-        self.menuPlay = pygame.draw.rect(surf, (0, 0, 255), (150, 120, 100, 40))
+        self.menu_play = pygame.draw.rect(surf, (0, 0, 255), (150, 120, 100, 40))
         label = myfont.render("PLAY", 1, (255, 255, 255))
         surf.blit(label, (160, 125, 100, 40))
 
-        self.menuMCTS = pygame.draw.rect(surf, (0, 0, 255), (150, 180, 100, 40))
+        self.menu_MCTS = pygame.draw.rect(surf, (0, 0, 255), (150, 180, 100, 40))
         label = myfont.render("MCTS", 1, (255, 255, 255))
         surf.blit(label, (160, 185, 100, 40))
 
-        self.menuExit = pygame.draw.rect(surf, (255, 0, 0), (150, 240, 100, 40))
+        self.menu_exit = pygame.draw.rect(surf, (255, 0, 0), (150, 240, 100, 40))
         label = myfont.render("EXIT", 1, (255, 255, 255))
         surf.blit(label, (160, 245, 100, 40))
 
         pygame.display.flip()
 
-    def createFooter(self, surf):
+    def create_footer(self, surf):
         myfont = pygame.font.SysFont("monospace", 30, bold="true")
 
         self.footer = pygame.draw.rect(surf, (0, 0, 255), (0, 400, 100, 40))
         label = myfont.render("BACK", 1, (255, 255, 255))
         surf.blit(label, (10, 405, 100, 40))
 
-        self.footerReset = pygame.draw.rect(surf, (0, 0, 255), (295, 400, 105, 40))
+        self.footer_reset = pygame.draw.rect(surf, (0, 0, 255), (295, 400, 105, 40))
         label = myfont.render("RESET", 1, (255, 255, 255))
         surf.blit(label, (295, 405, 100, 40))
 
-        # TODO: dodelat scoreview
         pygame.display.flip()
 
-    def chooseFooter(self, x, y, game, surf, monteCarlo):
+    def choose_footer(self, x, y, game, surf, monte_carlo):
         if self.footer.collidepoint(x, y):
-            print("You clicked on a Footer")
+            # print("You clicked on a Footer")
             game.start = False
-            game.gameOver = False
-            monteCarlo.start = False
-            monteCarlo.screen = False
-            hasPrinted = False
-            self.startMenu(surf)
-        if self.footerReset.collidepoint(x, y):
-            print("You clicked on Reset")
-            game.gameOver = False
-            game.resetMatrix(surf)
+            game.game_over = False
+            monte_carlo.start = False
+            monte_carlo.screen = False
+            has_printed = False
+            self.start_menu(surf)
+        if self.footer_reset.collidepoint(x, y):
+            # print("You clicked on Reset")
+            game.game_over = False
+            game.reset_matrix(surf)
             game.score = 0
             pygame.display.flip()
-            game.isWin = False
-            if monteCarlo.screen:
-                monteCarlo.start = True
+            game.is_win = False
+            if monte_carlo.screen:
+                monte_carlo.start = True
 
-    def menuChoose(self, x, y, game, surf, monteCarlo):
-        if self.menuPlay.collidepoint(x, y):
-            print("You hitted Play")
-            self.createFooter(surf)
-            game.printMatrix(surf)
+    def menu_choose(self, x, y, game, surf, monte_carlo):
+        if self.menu_play.collidepoint(x, y):
+            # print("You hitted Play")
+            self.create_footer(surf)
+            game.print_matrix(surf)
             game.start = True
-        if self.menuMCTS.collidepoint(x, y):
-            print("You hitted MCTS")
-            self.createFooter(surf)
-            monteCarlo.screen = True
-            monteCarlo.start = True
+        if self.menu_MCTS.collidepoint(x, y):
+            # print("You hitted MCTS")
+            self.create_footer(surf)
+            monte_carlo.screen = True
+            monte_carlo.start = True
             game.start = False
-            game.gameOver = False
-            game.resetMatrix(surf)
-        if self.menuExit.collidepoint(x, y):
-            print("You hitted Exit")
+            game.game_over = False
+            game.reset_matrix(surf)
+        if self.menu_exit.collidepoint(x, y):
+            # print("You hitted Exit")
             pygame.quit()
             exit()
 
 
 def main():
-    menu = Menu()
     pygame.init()
+    menu = Menu()
     game = Game()
-    scoreView = "2048 score: " + str(game.score)
-    pygame.display.set_caption(scoreView)
+
+    score_view = "2048 score: " + str(game.score)
+    pygame.display.set_caption(score_view)
+
     screen = pygame.display.set_mode((400, 440))
-    menu.startMenu(screen)
+    menu.start_menu(screen)
     clock = pygame.time.Clock()
 
-    monteCarlo = MonteCarlo()
-    hasPrinted = False
+    monte_carlo = MonteCarlo()
+    has_printed = False
 
     while True:
         if game.start:
-            if not hasPrinted:
+            if not has_printed:
                 print("Starting game...")
-                hasPrinted = True
-                game.placeRandomTile(game.matrix)
-            game.printMatrix(screen)
-            scoreView = "2048 score: " + str(game.score)
-            pygame.display.set_caption(scoreView)
+                has_printed = True
+                game.place_random_tile(game.matrix)
+            game.print_matrix(screen)
+            score_view = "2048 score: " + str(game.score)
+            pygame.display.set_caption(score_view)
             pygame.display.flip()
 
-        if game.gameOver:
-            if not hasPrinted:
+        if game.game_over:
+            if not has_printed:
                 print("Game over")
-                hasPrinted = True
+                has_printed = True
             myfont = pygame.font.SysFont("monospace", 30, bold="true")
-            gameOverButton = pygame.draw.rect(
+            game_over_button = pygame.draw.rect(
                 screen, (255, 255, 255), (100, 170, 210, 60)
             )
             label = myfont.render("GAME OVER", 1, (0, 0, 255))
             screen.blit(label, (110, 185, 100, 60))
             pygame.display.flip()
 
-        if monteCarlo.screen:
-            if monteCarlo.start:
-                if not hasPrinted:
+        if monte_carlo.screen:
+            if monte_carlo.start:
+                if not has_printed:
                     print("Starting MCTS")
-                    hasPrinted = True
-                monteCarlo.start = game.checkGame(game.matrix)
-                while game.checkGame(game.matrix):
-                    direction = monteCarlo.getDirection(game.matrix, game)
-                    game.updateMatrix(direction, game.matrix)
-                    game.mergeTiles(direction, game.matrix)
-                    game.startRandom = True
-                    game.placeRandomTile(game.matrix)
-                    game.printMatrix(screen)
-                    scoreView = "2048 score: " + str(game.score)
-                    pygame.display.set_caption(scoreView)
+                    has_printed = True
+                monte_carlo.start = game.check_game(game.matrix)
+                while game.check_game(game.matrix):
+                    direction = monte_carlo.get_direction(game.matrix, game)
+                    game.update_matrix(direction, game.matrix)
+                    game.merge_tiles(direction, game.matrix)
+                    game.start_random = True
+                    game.place_random_tile(game.matrix)
+                    game.print_matrix(screen)
+                    score_view = "2048 score: " + str(game.score)
+                    pygame.display.set_caption(score_view)
                     # game.score = 0
                     pygame.display.flip()
                 # game.score = 0
 
-                game.gameOver = True
+                game.game_over = True
 
         pygame.display.flip()
 
@@ -152,16 +150,16 @@ def main():
                     pygame.K_RIGHT,
                 ):
                     if game.start:
-                        game.run(event.key, screen)
+                        game.run_game(event.key, screen)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
 
-                if game.start or game.gameOver or monteCarlo.start:
-                    menu.createFooter(screen)
+                if game.start or game.game_over or monte_carlo.start:
+                    menu.create_footer(screen)
                     pygame.display.flip()
-                    menu.chooseFooter(x, y, game, screen, monteCarlo)
+                    menu.choose_footer(x, y, game, screen, monte_carlo)
                 else:
-                    menu.menuChoose(x, y, game, screen, monteCarlo)
+                    menu.menu_choose(x, y, game, screen, monte_carlo)
 
 
 if __name__ == "__main__":

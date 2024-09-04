@@ -5,57 +5,57 @@ import random
 class MonteCarlo:
     def __init__(self):
         self.start = False
-        self.pocetIteraci = 20
-        self.matrixList = []
-        self.scoreUp = [0]
-        self.scoreDown = [0]
-        self.scoreLeft = [0]
-        self.scoreRight = [0]
-        self.scoreListAll = []
+        self.iteration_cnt = 20
+        self.matrix_list = []
+        self.score_up = [0]
+        self.score_down = [0]
+        self.score_left = [0]
+        self.score_right = [0]
+        self.score_list_all = []
         self.screen = False
 
-    def getDirection(self, matrix, game):
+    def get_direction(self, matrix, game):
 
-        trueScore = copy.deepcopy(game.score)
-        for i in range(self.pocetIteraci + 1):
+        true_score = copy.deepcopy(game.score)
+        for i in range(self.iteration_cnt + 1):
             k = random.randint(0, 3)  # smer, kterym se ma hra posunout
-            interMatrix = copy.deepcopy(matrix)
+            inner_matrix = copy.deepcopy(matrix)
             # print("score is: ", trueScore)
             while (
-                game.checkIfCanMove(k, interMatrix)
+                game.check_if_can_move(k, inner_matrix)
             ) == False:  # pokud vyberu smer, kterym nemuzu, vyberu jiny smer
                 k = random.randint(0, 3)
 
-            while game.checkGame(interMatrix):  # hraju dokud muzu random postupem
+            while game.check_game(inner_matrix):  # hraju dokud muzu random postupem
                 a = random.randint(0, 3)
-                while not game.checkIfCanMove(a, interMatrix):
+                while not game.check_if_can_move(a, inner_matrix):
                     a = random.randint(0, 3)
 
-                game.updateMatrix(a, interMatrix)
-                game.mergeTiles(a, interMatrix)
-                game.startRandom = True
-                game.placeRandomTile(interMatrix)
+                game.update_matrix(a, inner_matrix)
+                game.merge_tiles(a, inner_matrix)
+                game.start_random = True
+                game.place_random_tile(inner_matrix)
 
             if k == 0:
-                self.scoreUp.append(game.score)
+                self.score_up.append(game.score)
             if k == 1:
-                self.scoreLeft.append(game.score)
+                self.score_left.append(game.score)
             if k == 2:
-                self.scoreDown.append(game.score)
+                self.score_down.append(game.score)
             if k == 3:
-                self.scoreRight.append(game.score)
+                self.score_right.append(game.score)
 
-        self.scoreListAll.append(sum(self.scoreUp) / (len(self.scoreUp)))
-        self.scoreListAll.append(sum(self.scoreLeft) / (len(self.scoreLeft)))
-        self.scoreListAll.append(sum(self.scoreDown) / (len(self.scoreDown)))
-        self.scoreListAll.append(sum(self.scoreRight) / (len(self.scoreRight)))
+        self.score_list_all.append(sum(self.score_up) / (len(self.score_up)))
+        self.score_list_all.append(sum(self.score_left) / (len(self.score_left)))
+        self.score_list_all.append(sum(self.score_down) / (len(self.score_down)))
+        self.score_list_all.append(sum(self.score_right) / (len(self.score_right)))
 
-        direction = self.scoreListAll.index(max(self.scoreListAll))
+        direction = self.score_list_all.index(max(self.score_list_all))
 
-        del self.scoreListAll[:]
-        self.scoreUp = [0]
-        self.scoreDown = [0]
-        self.scoreLeft = [0]
-        self.scoreRight = [0]
-        game.score = trueScore
+        del self.score_list_all[:]
+        self.score_up = [0]
+        self.score_down = [0]
+        self.score_left = [0]
+        self.score_right = [0]
+        game.score = true_score
         return direction

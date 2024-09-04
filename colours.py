@@ -27,5 +27,5 @@ colour_dict = {
 }
 
 
-def getColour(i):
+def get_colour(i):
     return colour_dict[i]
