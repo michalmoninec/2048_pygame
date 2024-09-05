@@ -271,8 +271,7 @@ class Game:
         for i in range(0, self.board_size):
             for j in range(0, self.board_size):
                 if not self.is_win:
-                    if self.matrix[i][j] == 8:
-                        print("Dosahnul jsi 8")
+                    if self.matrix[i][j] == 2048:
                         self.is_win = True
                         return True
 

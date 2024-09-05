@@ -7,19 +7,24 @@ from graphics.menu import Menu
 from sprites.monte_carlo import MonteCarlo
 
 
-def main():
-    pygame.init()
-    menu = Menu()
-    game = Game()
-
-    score_view = "2048 score: " + str(game.score)
+def game_window_setup(menu, score):
+    score_view = "2048 score: " + str(score)
     pygame.display.set_caption(score_view)
 
     screen = pygame.display.set_mode((400, 440))
     menu.start_menu(screen)
-    clock = pygame.time.Clock()
 
+    return screen
+
+
+def main():
+    pygame.init()
+    menu = Menu()
+    game = Game()
     monte_carlo = MonteCarlo()
+
+    screen = game_window_setup(menu, game.score)
+
     has_printed = False
 
     while True:
