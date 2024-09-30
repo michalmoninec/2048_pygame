@@ -34,11 +34,14 @@ class Game:
                 )
                 if self.matrix[c][r] != 0:
                     label = self.myfont.render(str(self.matrix[c][r]), 1, (0, 0, 0))
+                    label_width, label_height = label.get_size()
                     surf.blit(
                         label,
                         (
-                            r * (400 / self.board_size) + 10,
-                            c * (400 / self.board_size) + 10,
+                            r * (400 / self.board_size)
+                            + (400 / self.board_size - label_width) / 2,
+                            c * (400 / self.board_size)
+                            + (400 / self.board_size - label_height) / 2,
                         ),
                     )
         pygame.display.update()

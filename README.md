@@ -1,5 +1,8 @@
 # 2048_pygame
 
-old school project
+Simple implementation of 2048 game.
+Two modes available: singleplayer and MCTS simulation.
 
-## needs massive refactoring
+## Status
+
+-   Needs massive optimization, missing concurrency for mcts simulation, type annotations, ...
