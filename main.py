@@ -1,100 +1,98 @@
-import pygame, sys, os
-import time
+import pygame as pg
+import asyncio
 
+
+from pygame import Surface
 
 from game import Game
-from graphics.menu import Menu
+from graphics.screen import Screen
 from sprites.monte_carlo import MonteCarlo
 
 
-def game_window_setup(menu, score):
-    score_view = "2048 score: " + str(score)
-    pygame.display.set_caption(score_view)
-
-    screen = pygame.display.set_mode((400, 440))
-    menu.start_menu(screen)
-
-    return screen
-
-
-def main():
-    pygame.init()
-    menu = Menu()
+def main() -> None:
+    try:
+        pg.init()
+    except:
+        exit()
+    screen = Screen()
     game = Game()
     monte_carlo = MonteCarlo()
+    surf = surface_setup(screen, game.score)
 
-    screen = game_window_setup(menu, game.score)
+    asyncio.run(main_loop(screen, game, monte_carlo, surf))
 
-    has_printed = False
 
+async def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface):
     while True:
         if game.start:
-            if not has_printed:
-                print("Starting game...")
-                has_printed = True
-                game.place_random_tile(game.matrix)
-            game.print_matrix(screen)
-            score_view = "2048 score: " + str(game.score)
-            pygame.display.set_caption(score_view)
-            pygame.display.flip()
+            if screen.last == "simulation":
+                screen.last = "game"
+                game.reset_matrix(surf)
+                game.game_over = False
+            game.print_matrix(surf)
 
-        if game.game_over:
-            if not has_printed:
-                print("Game over")
-                has_printed = True
-            myfont = pygame.font.SysFont("monospace", 30, bold="true")
-            game_over_button = pygame.draw.rect(
-                screen, (255, 255, 255), (100, 170, 210, 60)
-            )
-            label = myfont.render("GAME OVER", 1, (0, 0, 255))
-            screen.blit(label, (110, 185, 100, 60))
-            pygame.display.flip()
+        if game.game_over and (game.screen or monte_carlo.screen):
+            screen.show_game_over(surf)
 
-        if monte_carlo.screen:
-            if monte_carlo.start:
-                if not has_printed:
-                    print("Starting MCTS")
-                    has_printed = True
-                monte_carlo.start = game.check_game(game.matrix)
-                while game.check_game(game.matrix):
-                    direction = monte_carlo.get_direction(game.matrix, game)
-                    game.update_matrix(direction, game.matrix)
-                    game.merge_tiles(direction, game.matrix)
-                    game.start_random = True
-                    game.place_random_tile(game.matrix)
-                    game.print_matrix(screen)
-                    score_view = "2048 score: " + str(game.score)
-                    pygame.display.set_caption(score_view)
-                    # game.score = 0
-                    pygame.display.flip()
-                # game.score = 0
+        if monte_carlo.screen and monte_carlo.start:
+            asyncio.create_task(mt_simulation(monte_carlo, game, surf, screen))
 
-                game.game_over = True
-
-        pygame.display.flip()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
                 exit()
-            if event.type == pygame.KEYDOWN:
+            if event.type == pg.KEYDOWN:
                 if event.key in (
-                    pygame.K_UP,
-                    pygame.K_DOWN,
-                    pygame.K_LEFT,
-                    pygame.K_RIGHT,
+                    pg.K_UP,
+                    pg.K_DOWN,
+                    pg.K_LEFT,
+                    pg.K_RIGHT,
                 ):
-                    if game.start:
-                        game.run_game(event.key, screen)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = pygame.mouse.get_pos()
+                    game.run_game(event.key, surf)
 
-                if game.start or game.game_over or monte_carlo.start:
-                    menu.create_footer(screen)
-                    pygame.display.flip()
-                    menu.choose_footer(x, y, game, screen, monte_carlo)
+            if event.type == pg.MOUSEBUTTONDOWN:
+                x, y = pg.mouse.get_pos()
+
+                if game.start or monte_carlo.start:
+                    screen.create_footer(surf)
+                    screen.handle_footer(x, y, game, surf, monte_carlo)
                 else:
-                    menu.menu_choose(x, y, game, screen, monte_carlo)
+                    screen.handle_menu(x, y, game, surf, monte_carlo)
+
+        screen.update_score_view(game.score)
+        pg.display.update()
+        pg.display.flip()
+
+        await asyncio.sleep(0)
+
+
+async def mt_simulation(
+    monte_carlo: MonteCarlo, game: Game, surf: Surface, screen: Screen
+) -> None:
+    screen.last = "simulation"
+    while game.game_possible_movement() and monte_carlo.running:
+        direction = monte_carlo.get_direction(game)
+        game.update_matrix(direction, game.matrix)
+        game.merge_tiles(direction, game.matrix)
+        game.start_random = True
+        game.place_random_tile()
+        game.print_matrix(surf)
+        # screen.update_score_view(game.score)
+
+        pg.display.update()
+        # pg.display.flip()
+        await asyncio.sleep(0.1)
+    game.game_over = not game.game_possible_movement()
+
+
+def surface_setup(screen: Screen, score: int) -> Surface:
+    score_view = "2048 score: " + str(score)
+    pg.display.set_caption(score_view)
+
+    surf = pg.display.set_mode((400, 440))
+    screen.create_menu(surf)
+
+    return surf
 
 
 if __name__ == "__main__":

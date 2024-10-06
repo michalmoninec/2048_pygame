@@ -1,10 +1,17 @@
 import copy
 import random
 
+import pygame as pg
+
+from game import Game
+
+dirs = [pg.K_UP, pg.K_LEFT, pg.K_DOWN, pg.K_RIGHT]
+
 
 class MonteCarlo:
     def __init__(self):
         self.start = False
+        self.running = False
         self.iteration_cnt = 20
         self.matrix_list = []
         self.score_up = [0]
@@ -14,35 +21,36 @@ class MonteCarlo:
         self.score_list_all = []
         self.screen = False
 
-    def get_direction(self, matrix, game):
-
+    def get_direction(self, game: Game):
+        matrix = game.matrix
         true_score = copy.deepcopy(game.score)
-        for i in range(self.iteration_cnt + 1):
-            k = random.randint(0, 3)  # smer, kterym se ma hra posunout
+        for _ in range(self.iteration_cnt + 1):
+            # print(f"iteration: {i}")
+            k = dirs[random.randint(0, 3)]
             inner_matrix = copy.deepcopy(matrix)
-            # print("score is: ", trueScore)
-            while (
-                game.check_if_can_move(k, inner_matrix)
-            ) == False:  # pokud vyberu smer, kterym nemuzu, vyberu jiny smer
-                k = random.randint(0, 3)
+            while (game.move_in_direction_possible(k, inner_matrix)) == False:
+                # print("first while stuck")
+                k = dirs[random.randint(0, 3)]
 
-            while game.check_game(inner_matrix):  # hraju dokud muzu random postupem
-                a = random.randint(0, 3)
-                while not game.check_if_can_move(a, inner_matrix):
-                    a = random.randint(0, 3)
+            while game.game_possible_movement(inner_matrix) and self.running:
+                # print("second while stuck")
+                a = dirs[random.randint(0, 3)]
+                while not game.move_in_direction_possible(a, inner_matrix):
+                    # print("third while stuck..")
+                    a = dirs[random.randint(0, 3)]
 
                 game.update_matrix(a, inner_matrix)
                 game.merge_tiles(a, inner_matrix)
                 game.start_random = True
                 game.place_random_tile(inner_matrix)
 
-            if k == 0:
+            if k == pg.K_UP:
                 self.score_up.append(game.score)
-            if k == 1:
+            if k == pg.K_LEFT:
                 self.score_left.append(game.score)
-            if k == 2:
+            if k == pg.K_DOWN:
                 self.score_down.append(game.score)
-            if k == 3:
+            if k == pg.K_RIGHT:
                 self.score_right.append(game.score)
 
         self.score_list_all.append(sum(self.score_up) / (len(self.score_up)))
@@ -50,7 +58,8 @@ class MonteCarlo:
         self.score_list_all.append(sum(self.score_down) / (len(self.score_down)))
         self.score_list_all.append(sum(self.score_right) / (len(self.score_right)))
 
-        direction = self.score_list_all.index(max(self.score_list_all))
+        direction = dirs[self.score_list_all.index(max(self.score_list_all))]
+        # print(f"dir outcome from monte carlo: {direction}")
 
         del self.score_list_all[:]
         self.score_up = [0]

@@ -1,9 +1,8 @@
-import pygame, sys, time
-from pygame.locals import *
+import pygame, time
 import random
-import keyboard
+
+from pygame import Surface
 from assets.colours import colour_dict, get_colour
-import random
 
 
 class Game:
@@ -15,46 +14,59 @@ class Game:
         self.start_random = True
         self.start = False
         self.game_over = False
-        self.reset = False
         self.score = 0
         self.is_win = False
+        self.screen = False
 
-    def print_matrix(self, surf):
-        for c in range(0, self.board_size):
-            for r in range(0, self.board_size):
+        self.place_random_tile()
+
+    def print_matrix(self, surf: Surface) -> None:
+        for col in range(self.board_size):
+            for row in range(self.board_size):
                 pygame.draw.rect(
                     surf,
-                    colour_dict[self.matrix[c][r]],
+                    colour_dict[self.matrix[col][row]],
                     (
-                        r * self.tile_size,
-                        c * self.tile_size,
+                        row * self.tile_size,
+                        col * self.tile_size,
                         self.tile_size,
                         self.tile_size,
                     ),
                 )
-                if self.matrix[c][r] != 0:
-                    label = self.myfont.render(str(self.matrix[c][r]), 1, (0, 0, 0))
+                if self.matrix[col][row] != 0:
+                    label = self.myfont.render(str(self.matrix[col][row]), 1, (0, 0, 0))
                     label_width, label_height = label.get_size()
                     surf.blit(
                         label,
                         (
-                            r * (400 / self.board_size)
+                            row * (400 / self.board_size)
                             + (400 / self.board_size - label_width) / 2,
-                            c * (400 / self.board_size)
+                            col * (400 / self.board_size)
                             + (400 / self.board_size - label_height) / 2,
                         ),
                     )
-        pygame.display.update()
 
-    def is_there_space(self):
-        count = 0
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                if self.matrix[i][j] == 0:
-                    return True
-        return False
+    def run_game(self, dir: int, surf: Surface) -> None:
+        if self.start:
+            if self.game_possible_movement() and not self.game_over:
+                if self.move_in_direction_possible(dir, self.matrix):
+                    self.update_matrix(dir, self.matrix)
+                    self.merge_tiles(dir, self.matrix)
+                    self.place_random_tile()
+                    self.print_matrix(surf)
 
-    def place_random_tile(self, matrix):
+                    if self.is_score():
+                        pygame.draw.rect(surf, (255, 255, 255), (100, 170, 210, 60))
+                        label = self.my_font.render("YOU WON", 1, (0, 0, 255))
+                        surf.blit(label, (110, 185, 100, 60))
+                        time.sleep(2)
+            else:
+                self.game_over = True
+
+    def place_random_tile(self, matrix=None):
+        if matrix is None:
+            matrix = self.matrix
+        self.start_random = True
         while self.start_random == True:
             i = random.randint(0, 3)
             j = random.randint(0, 3)
@@ -69,44 +81,30 @@ class Game:
                     self.start_random = False
                     break
 
-    def move(self, dir):
-        if dir == pygame.K_UP:
-            self.start_random = True
-            return 0
-        if dir == pygame.K_DOWN:
-            self.start_random = True
-            return 2
-        if dir == pygame.K_RIGHT:
-            self.start_random = True
-            return 3
-        if dir == pygame.K_LEFT:
-            self.start_random = True
-            return 1
+    def transpose(self, matrix):
+        for i in range(len(matrix)):
+            for j in range(i + 1, len(matrix)):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
 
-    def transpose(self, A):
-        N = 4
-        for i in range(N):
-            for j in range(i + 1, N):
-                A[i][j], A[j][i] = A[j][i], A[i][j]
-
-    def check_game(self, matrix):
+    def game_possible_movement(self, matrix=None) -> bool:
+        if matrix is None:
+            matrix = self.matrix
         can_move_up = False
         can_move_left = False
         can_move_down = False
         can_move_right = False
         for k in range(4):
-            if k == 0:  # up
+            if k == 0:
                 self.transpose(matrix)
                 for i in range(0, self.board_size):
                     for j in range(0, self.board_size - 1):
                         if (matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0) or (
                             matrix[i][j] == 0 and sum(matrix[i][j:]) > 0
                         ):
-                            # return True
                             can_move_up = True
                 self.transpose(matrix)
 
-            elif k == 1:  # left
+            elif k == 1:
                 for i in range(0, self.board_size):
                     for j in range(0, self.board_size - 1):
                         if (matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0) or (
@@ -114,7 +112,7 @@ class Game:
                         ):
                             can_move_left = True
 
-            elif k == 2:  # down
+            elif k == 2:
                 self.transpose(matrix)
                 for i in range(0, self.board_size):
                     for j in range(self.board_size - 1, 0, -1):
@@ -124,7 +122,7 @@ class Game:
                             can_move_down = True
                 self.transpose(matrix)
 
-            elif k == 3:  # right
+            elif k == 3:
                 for i in range(0, self.board_size):
                     for j in range(self.board_size - 1, 0, -1):
                         if (matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0) or (
@@ -137,15 +135,12 @@ class Game:
             and can_move_down == False
             and can_move_right == False
         ):
-            # self.gameOver = True
             return False
-        else:
-            return True
+        return True
 
-    def check_if_can_move(self, direction, matrix):
-        k = direction
+    def move_in_direction_possible(self, dir: int, matrix):
 
-        if k == 0:  # up
+        if dir == pygame.K_UP:
             self.transpose(matrix)
             for i in range(0, self.board_size):
                 for j in range(0, self.board_size - 1):
@@ -158,7 +153,7 @@ class Game:
             self.transpose(matrix)
             return False
 
-        elif k == 1:  # left
+        elif dir == pygame.K_LEFT:
             for i in range(0, self.board_size):
                 for j in range(0, self.board_size - 1):
                     if (matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0) or (
@@ -167,7 +162,7 @@ class Game:
                         return True
             return False
 
-        elif k == 2:  # down
+        elif dir == pygame.K_DOWN:
             self.transpose(matrix)
             for i in range(0, self.board_size):
                 for j in range(self.board_size - 1, 0, -1):
@@ -179,7 +174,7 @@ class Game:
             self.transpose(matrix)
             return False
 
-        elif k == 3:  # right
+        elif dir == pygame.K_RIGHT:
             for i in range(0, self.board_size):
                 for j in range(self.board_size - 1, 0, -1):
                     if (matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0) or (
@@ -188,9 +183,9 @@ class Game:
                         return True
             return False
 
-    def update_matrix(self, dir, matrix):
+    def update_matrix(self, dir: int, matrix):
 
-        if dir == 0:  # up
+        if dir == pygame.K_UP:
             self.transpose(matrix)
             for i in range(0, 4):
                 for j in range(0, 3):
@@ -200,7 +195,7 @@ class Game:
                         matrix[i][3] = 0
             self.transpose(matrix)
 
-        elif dir == 1:  # left
+        elif dir == pygame.K_LEFT:
             for i in range(0, 4):
                 for j in range(0, 3):
                     while matrix[i][j] == 0 and sum(matrix[i][j:]) > 0:
@@ -208,7 +203,7 @@ class Game:
                             matrix[i][dir] = matrix[i][dir + 1]
                         matrix[i][3] = 0
 
-        elif dir == 2:  # down
+        elif dir == pygame.K_DOWN:
             self.transpose(matrix)
             for i in range(0, 4):
                 for j in range(3, -1, -1):
@@ -218,7 +213,7 @@ class Game:
                         matrix[i][0] = 0
             self.transpose(matrix)
 
-        elif dir == 3:  # right
+        elif dir == pygame.K_RIGHT:
             for i in range(0, 4):
                 for j in range(3, 0, -1):
                     while matrix[i][j] == 0 and sum(matrix[i][:j]) > 0:
@@ -226,78 +221,56 @@ class Game:
                             matrix[i][dir] = matrix[i][dir - 1]
                         matrix[i][0] = 0
 
-    def merge_tiles(self, k, matice_):
-        if k == 0:  # up
-            self.transpose(matice_)
+    def merge_tiles(self, k, matrix):
+        if k == pygame.K_UP:
+            self.transpose(matrix)
             for i in range(0, self.board_size):
                 for j in range(0, self.board_size - 1):
-                    if matice_[i][j] == matice_[i][j + 1] and matice_[i][j] != 0:
-                        matice_[i][j] = matice_[i][j] * 2
-                        matice_[i][j + 1] = 0
-                        self.score += matice_[i][j]
-            self.transpose(matice_)
-            self.update_matrix(k, matice_)
-        if k == 1:  # left
+                    if matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0:
+                        matrix[i][j] = matrix[i][j] * 2
+                        matrix[i][j + 1] = 0
+                        self.score += matrix[i][j]
+            self.transpose(matrix)
+            self.update_matrix(k, matrix)
+        if k == pygame.K_LEFT:
             for i in range(0, self.board_size):
                 for j in range(0, self.board_size - 1):
-                    if matice_[i][j] == matice_[i][j + 1] and matice_[i][j] != 0:
-                        matice_[i][j] = matice_[i][j] * 2
-                        matice_[i][j + 1] = 0
-                        self.score += matice_[i][j]
-            self.update_matrix(k, matice_)
-        if k == 2:  # down
-            self.transpose(matice_)
+                    if matrix[i][j] == matrix[i][j + 1] and matrix[i][j] != 0:
+                        matrix[i][j] = matrix[i][j] * 2
+                        matrix[i][j + 1] = 0
+                        self.score += matrix[i][j]
+            self.update_matrix(k, matrix)
+        if k == pygame.K_DOWN:
+            self.transpose(matrix)
             for i in range(0, self.board_size):
                 for j in range(self.board_size - 1, -1, -1):
-                    if matice_[i][j] == matice_[i][j - 1] and matice_[i][j] != 0:
-                        matice_[i][j] = matice_[i][j] * 2
-                        matice_[i][j - 1] = 0
-                        self.score += matice_[i][j]
-            self.transpose(matice_)
-            self.update_matrix(k, matice_)
-        if k == 3:  # right
+                    if matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0:
+                        matrix[i][j] = matrix[i][j] * 2
+                        matrix[i][j - 1] = 0
+                        self.score += matrix[i][j]
+            self.transpose(matrix)
+            self.update_matrix(k, matrix)
+        if k == pygame.K_RIGHT:
             for i in range(0, self.board_size):
                 for j in range(self.board_size - 1, -1, -1):
-                    if matice_[i][j] == matice_[i][j - 1] and matice_[i][j] != 0:
-                        matice_[i][j] = matice_[i][j] * 2
-                        matice_[i][j - 1] = 0
-                        self.score += matice_[i][j]
-            self.update_matrix(k, matice_)
+                    if matrix[i][j] == matrix[i][j - 1] and matrix[i][j] != 0:
+                        matrix[i][j] = matrix[i][j] * 2
+                        matrix[i][j - 1] = 0
+                        self.score += matrix[i][j]
+            self.update_matrix(k, matrix)
 
     def reset_matrix(self, surf):
-        self.matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        self.matrix = [[0 for _ in range(4)] for _ in range(4)]
+        self.score = 0
         self.start_random = True
-        self.place_random_tile(self.matrix)
+        self.place_random_tile()
         self.print_matrix(surf)
 
-    def is_score(self, surf):
-        for i in range(0, self.board_size):
-            for j in range(0, self.board_size):
+    def is_score(self):
+        for i in range(self.board_size):
+            for j in range(self.board_size):
                 if not self.is_win:
                     if self.matrix[i][j] == 2048:
                         self.is_win = True
                         return True
-
-    def run_game(self, dir, surf):
-        if self.check_game(self.matrix) and not self.game_over:
-            # print(self.move(dir))
-            if self.check_if_can_move(self.move(dir), self.matrix):
-                self.update_matrix(self.move(dir), self.matrix)
-                self.merge_tiles(self.move(dir), self.matrix)
-                self.place_random_tile(self.matrix)
-                self.print_matrix(surf)
-
-                # print("Score is: ", self.score)
-
-                if self.is_score(surf):
-                    my_font = pygame.font.SysFont("monospace", 30, bold="true")
-                    game_over_button = pygame.draw.rect(
-                        surf, (255, 255, 255), (100, 170, 210, 60)
-                    )
-                    label = my_font.render("YOU WIN", 1, (0, 0, 255))
-                    surf.blit(label, (110, 185, 100, 60))
-                    pygame.display.flip()
-                    time.sleep(2)
-        else:
-            self.start = False
-            self.game_over = True
+        return False
