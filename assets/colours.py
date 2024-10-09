@@ -25,7 +25,3 @@ colour_dict = {
     1024: DEEP_ORANGE,
     2048: BROWN,
 }
-
-
-def get_colour(i):
-    return colour_dict[i]

@@ -10,6 +10,10 @@ from sprites.monte_carlo import MonteCarlo
 
 
 def main() -> None:
+    """
+    Initialization setup for pygame, scren, game and mt simultaion.
+    Start of async loop.
+    """
     try:
         pg.init()
     except:
@@ -23,6 +27,9 @@ def main() -> None:
 
 
 async def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface):
+    """
+    Main loop handles game state, event handling, simulation state.
+    """
     while True:
         if game.start:
             if screen.last == "simulation":
@@ -69,6 +76,9 @@ async def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: S
 async def mt_simulation(
     monte_carlo: MonteCarlo, game: Game, surf: Surface, screen: Screen
 ) -> None:
+    """
+    Simulation choose direction based on best score of random movement till game is over.
+    """
     screen.last = "simulation"
     while game.game_possible_movement() and monte_carlo.running:
         direction = monte_carlo.get_direction(game)
@@ -81,11 +91,14 @@ async def mt_simulation(
 
         pg.display.update()
         # pg.display.flip()
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0)
     game.game_over = not game.game_possible_movement()
 
 
 def surface_setup(screen: Screen, score: int) -> Surface:
+    """
+    Setup helper for menu creation, window resolution and score cap.
+    """
     score_view = "2048 score: " + str(score)
     pg.display.set_caption(score_view)
 

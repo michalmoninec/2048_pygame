@@ -16,8 +16,8 @@ Two modes available: singleplayer and MCTS simulation.
 
 ## TODO:
 
--   Error handling.
 -   Performance balance.
+-   Threading to control UI and run simulation so it wont freeze.
 -   "game" module update and optimization + clean-up.
 -   Dosctrings.
 -   MCTS improvement.
