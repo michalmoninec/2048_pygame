@@ -19,5 +19,4 @@ Two modes available: singleplayer and MCTS simulation.
 -   Performance balance.
 -   Threading to control UI and run simulation so it wont freeze.
 -   "game" module update and optimization + clean-up.
--   Dosctrings.
 -   MCTS improvement.
