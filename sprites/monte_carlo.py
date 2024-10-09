@@ -42,10 +42,8 @@ class MonteCarlo:
                 while not game.move_in_direction_possible(rand_dir, inner_matrix):
                     rand_dir = dirs[random.randint(0, 3)]
 
-                game.update_matrix(rand_dir, inner_matrix)
-                game.merge_tiles(rand_dir, inner_matrix)
+                game.move_in_direction(rand_dir, inner_matrix)
                 game.start_random = True
-                game.place_random_tile(inner_matrix)
 
             if fixed_dir == pg.K_UP:
                 self.score_up.append(game.score)

@@ -81,11 +81,9 @@ async def mt_simulation(
     """
     screen.last = "simulation"
     while game.game_possible_movement() and monte_carlo.running:
-        direction = monte_carlo.get_direction(game)
-        game.update_matrix(direction, game.matrix)
-        game.merge_tiles(direction, game.matrix)
+        dir = monte_carlo.get_direction(game)
+        game.move_in_direction(dir, game.matrix)
         game.start_random = True
-        game.place_random_tile()
         game.print_matrix(surf)
 
         pg.display.update()
