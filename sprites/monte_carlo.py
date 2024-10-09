@@ -32,32 +32,28 @@ class MonteCarlo:
         matrix = game.matrix
         true_score = copy.deepcopy(game.score)
         for _ in range(self.iteration_cnt + 1):
-            # print(f"iteration: {i}")
-            k = dirs[random.randint(0, 3)]
+            fixed_dir = dirs[random.randint(0, 3)]
             inner_matrix = copy.deepcopy(matrix)
-            while (game.move_in_direction_possible(k, inner_matrix)) == False:
-                # print("first while stuck")
-                k = dirs[random.randint(0, 3)]
+            while (game.move_in_direction_possible(fixed_dir, inner_matrix)) == False:
+                fixed_dir = dirs[random.randint(0, 3)]
 
             while game.game_possible_movement(inner_matrix) and self.running:
-                # print("second while stuck")
-                a = dirs[random.randint(0, 3)]
-                while not game.move_in_direction_possible(a, inner_matrix):
-                    # print("third while stuck..")
-                    a = dirs[random.randint(0, 3)]
+                rand_dir = dirs[random.randint(0, 3)]
+                while not game.move_in_direction_possible(rand_dir, inner_matrix):
+                    rand_dir = dirs[random.randint(0, 3)]
 
-                game.update_matrix(a, inner_matrix)
-                game.merge_tiles(a, inner_matrix)
+                game.update_matrix(rand_dir, inner_matrix)
+                game.merge_tiles(rand_dir, inner_matrix)
                 game.start_random = True
                 game.place_random_tile(inner_matrix)
 
-            if k == pg.K_UP:
+            if fixed_dir == pg.K_UP:
                 self.score_up.append(game.score)
-            if k == pg.K_LEFT:
+            if fixed_dir == pg.K_LEFT:
                 self.score_left.append(game.score)
-            if k == pg.K_DOWN:
+            if fixed_dir == pg.K_DOWN:
                 self.score_down.append(game.score)
-            if k == pg.K_RIGHT:
+            if fixed_dir == pg.K_RIGHT:
                 self.score_right.append(game.score)
 
         self.score_list_all.append(sum(self.score_up) / (len(self.score_up)))
@@ -66,7 +62,6 @@ class MonteCarlo:
         self.score_list_all.append(sum(self.score_right) / (len(self.score_right)))
 
         direction = dirs[self.score_list_all.index(max(self.score_list_all))]
-        # print(f"dir outcome from monte carlo: {direction}")
 
         del self.score_list_all[:]
         self.score_up = [0]

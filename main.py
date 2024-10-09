@@ -87,10 +87,8 @@ async def mt_simulation(
         game.start_random = True
         game.place_random_tile()
         game.print_matrix(surf)
-        # screen.update_score_view(game.score)
 
         pg.display.update()
-        # pg.display.flip()
         await asyncio.sleep(0)
     game.game_over = not game.game_possible_movement()
 
