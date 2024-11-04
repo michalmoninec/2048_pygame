@@ -18,11 +18,12 @@ class Game:
         self.myfont = pygame.font.SysFont("monospace", 30, bold="true")
         self.tile_size = 100
         self.start_random = True
-        self.start = False
+        self.player_start = False
         self.game_over = False
         self.score = 0
         self.is_win = False
-        self.screen = False
+        self.player_screen = False
+        self.caption_score = None
 
         self.place_random_tile()
         self.place_random_tile()
@@ -31,7 +32,7 @@ class Game:
         """
         Updates game state with provided direction.
         """
-        if self.start:
+        if self.player_start:
             if self.game_possible_movement() and not self.game_over:
                 self.move_in_direction(dir, self.matrix)
 

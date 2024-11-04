@@ -53,12 +53,15 @@ class Screen:
         """
         if self.back_button.collidepoint(x, y):
             surf.fill((0, 0, 0))
-            game.start = False
-            game.screen = False
-
-            monte_carlo.start = False
-            monte_carlo.screen = False
-            monte_carlo.running = False
+            if game.player_screen:
+                game.player_start = False
+                game.player_screen = False
+            elif monte_carlo.screen:
+                monte_carlo.stop_event.set()
+                monte_carlo.simulation_thread.join()
+                monte_carlo.sim_running = False
+                monte_carlo.screen = False
+                monte_carlo.running = False
 
             self.create_menu(surf)
 
@@ -66,14 +69,16 @@ class Screen:
             surf.fill((0, 0, 0))
             game.game_over = False
             game.score = 0
+            game.caption_score = 0
             game.is_win = False
 
             if monte_carlo.screen:
-                game.start = False
-                monte_carlo.start = True
+                monte_carlo.stop_event.set()
+                monte_carlo.simulation_thread.join()
+                monte_carlo.sim_running = False
                 monte_carlo.running = True
-            else:
-                game.start = True
+            elif game.player_screen:
+                game.player_start = True
                 monte_carlo.running = False
 
             game.reset_matrix(surf)
@@ -88,22 +93,19 @@ class Screen:
         if self.menu_play.collidepoint(x, y):
             surf.fill((0, 0, 0))
             self.create_footer(surf)
-            game.start = True
-            game.show_game_over = True
-            game.screen = True
+
+            game.player_start = True
+            game.player_screen = True
 
         elif self.menu_MCTS.collidepoint(x, y):
             self.create_footer(surf)
             monte_carlo.screen = True
-            monte_carlo.start = True
-            game.start = False
-            game.game_over = False
+            # monte_carlo.start = True
             monte_carlo.running = True
             game.reset_matrix(surf)
 
         elif self.menu_exit.collidepoint(x, y):
-            pg.quit()
-            exit()
+            pg.event.post(pg.event.Event(pg.QUIT))
 
     def show_game_over(self, surf: Surface) -> None:
         """

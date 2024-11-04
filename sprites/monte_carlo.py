@@ -1,5 +1,6 @@
 import copy
 import random
+import threading
 
 import pygame as pg
 
@@ -23,21 +24,27 @@ class MonteCarlo:
         self.score_right = [0]
         self.score_list_all = []
         self.screen = False
+        self.stop_event = threading.Event()
+        self.sim_running = False
+        self.simulation_thread = None
 
     def get_direction(self, game: Game) -> int:
         """
         Chooses direction and then runs simulation until game is over.
         Direction with best acomplished score is selected and returned.
         """
-        matrix = game.matrix
-        true_score = copy.deepcopy(game.score)
+        matrix = copy.deepcopy(game.matrix)
         for _ in range(self.iteration_cnt + 1):
             fixed_dir = dirs[random.randint(0, 3)]
             inner_matrix = copy.deepcopy(matrix)
             while (game.move_in_direction_possible(fixed_dir, inner_matrix)) == False:
                 fixed_dir = dirs[random.randint(0, 3)]
 
-            while game.game_possible_movement(inner_matrix) and self.running:
+            while (
+                game.game_possible_movement(inner_matrix)
+                and self.running
+                and not self.stop_event.is_set()
+            ):
                 rand_dir = dirs[random.randint(0, 3)]
                 while not game.move_in_direction_possible(rand_dir, inner_matrix):
                     rand_dir = dirs[random.randint(0, 3)]
@@ -66,5 +73,5 @@ class MonteCarlo:
         self.score_down = [0]
         self.score_left = [0]
         self.score_right = [0]
-        game.score = true_score
+        # game.score = true_score
         return direction

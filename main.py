@@ -1,5 +1,7 @@
+import threading
 import pygame as pg
 import asyncio
+import copy
 
 
 from pygame import Surface
@@ -11,41 +13,49 @@ from sprites.monte_carlo import MonteCarlo
 
 def main() -> None:
     """
-    Initialization setup for pygame, scren, game and mt simultaion.
-    Start of async loop.
+    Initialization setup for pygame, screen, game and mt simultaion.
     """
     try:
         pg.init()
     except:
         exit()
+
     screen = Screen()
     game = Game()
     monte_carlo = MonteCarlo()
-    surf = surface_setup(screen, game.score)
+    surf = surface_setup(screen, 0)
 
-    asyncio.run(main_loop(screen, game, monte_carlo, surf))
+    main_loop(screen, game, monte_carlo, surf)
 
 
-async def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface):
+def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface):
     """
     Main loop handles game state, event handling, simulation state.
     """
-    while True:
-        if game.start:
+    running = True
+    while running:
+        if game.player_start:
             if screen.last == "simulation":
                 screen.last = "game"
                 game.reset_matrix(surf)
                 game.game_over = False
+            game.caption_score = game.score
             game.print_matrix(surf)
 
-        if game.game_over and (game.screen or monte_carlo.screen):
+        if game.game_over and (game.player_screen or monte_carlo.screen):
             screen.show_game_over(surf)
 
-        if monte_carlo.screen and monte_carlo.start:
-            asyncio.create_task(mt_simulation(monte_carlo, game, surf, screen))
+        if monte_carlo.screen and not monte_carlo.sim_running:
+            monte_carlo.stop_event.clear()
+            monte_carlo.simulation_thread = threading.Thread(
+                target=mt_simulation, args=(monte_carlo, game, surf, screen)
+            )
+            monte_carlo.simulation_thread.start()
+            monte_carlo.sim_running = True
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
+                running = False
                 pg.quit()
                 exit()
             if event.type == pg.KEYDOWN:
@@ -60,34 +70,39 @@ async def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: S
             if event.type == pg.MOUSEBUTTONDOWN:
                 x, y = pg.mouse.get_pos()
 
-                if game.start or monte_carlo.start:
+                if game.player_start or monte_carlo.screen:
                     screen.create_footer(surf)
                     screen.handle_footer(x, y, game, surf, monte_carlo)
                 else:
                     screen.handle_menu(x, y, game, surf, monte_carlo)
 
-        screen.update_score_view(game.score)
+        screen.update_score_view(game.caption_score)
         pg.display.update()
         pg.display.flip()
 
-        await asyncio.sleep(0)
 
-
-async def mt_simulation(
+def mt_simulation(
     monte_carlo: MonteCarlo, game: Game, surf: Surface, screen: Screen
 ) -> None:
     """
     Simulation choose direction based on best score of random movement till game is over.
     """
     screen.last = "simulation"
-    while game.game_possible_movement() and monte_carlo.running:
+    while (
+        game.game_possible_movement()
+        and monte_carlo.running
+        and not monte_carlo.stop_event.is_set()
+    ):
+        score = copy.deepcopy(game.score)
         dir = monte_carlo.get_direction(game)
+        game.score = score
         game.move_in_direction(dir, game.matrix)
         game.start_random = True
         game.print_matrix(surf)
 
+        game.caption_score = game.score
         pg.display.update()
-        await asyncio.sleep(0)
+        pg.display.flip()
     game.game_over = not game.game_possible_movement()
 
 
