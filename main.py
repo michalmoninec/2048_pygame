@@ -23,6 +23,7 @@ def main() -> None:
     game = Game()
     monte_carlo = MonteCarlo()
     surf = surface_setup(screen, 0)
+    game.place_initial_random_tiles()
 
     main_loop(screen, game, monte_carlo, surf)
 
@@ -36,7 +37,8 @@ def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface
         if game.player_start:
             if screen.last == "simulation":
                 screen.last = "game"
-                game.reset_matrix(surf)
+                game.reset_matrix()
+                game.print_matrix(surf)
                 game.game_over = False
             game.caption_score = game.score
             game.print_matrix(surf)
@@ -96,7 +98,8 @@ def mt_simulation(
         score = copy.deepcopy(game.score)
         dir = monte_carlo.get_direction(game)
         game.score = score
-        game.move_in_direction(dir, game.matrix)
+        if game.move_in_direction(dir, game.matrix):
+            game.place_random_tile()
         game.start_random = True
         game.print_matrix(surf)
 

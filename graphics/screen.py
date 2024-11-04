@@ -17,7 +17,7 @@ class Screen:
 
     def create_menu(self, surf: Surface) -> None:
         """
-        Creates menu, that is displayed at the start of application.
+        Creates menu, that is displayed at the start of the application.
         """
         surf.fill((0, 0, 0))
 
@@ -81,7 +81,8 @@ class Screen:
                 game.player_start = True
                 monte_carlo.running = False
 
-            game.reset_matrix(surf)
+            game.reset_matrix()
+            game.print_matrix(surf)
             self.create_footer(surf)
 
     def handle_menu(
@@ -102,7 +103,8 @@ class Screen:
             monte_carlo.screen = True
             # monte_carlo.start = True
             monte_carlo.running = True
-            game.reset_matrix(surf)
+            game.reset_matrix()
+            game.print_matrix(surf)
 
         elif self.menu_exit.collidepoint(x, y):
             pg.event.post(pg.event.Event(pg.QUIT))
