@@ -5,7 +5,7 @@ import copy
 from pygame import Surface
 from typing import List
 
-from assets.colours import colour_dict
+from graphics.colours import colour_dict
 
 
 class Game:
@@ -36,7 +36,7 @@ class Game:
             if self.game_possible_movement() and not self.game_over:
                 self.move_in_direction(dir, self.matrix)
 
-                if self.is_score():
+                if self.score_reached_criterium():
                     pygame.draw.rect(surf, (255, 255, 255), (100, 170, 210, 60))
                     label = self.my_font.render("YOU WON", 1, (0, 0, 255))
                     surf.blit(label, (110, 185, 100, 60))
@@ -226,7 +226,7 @@ class Game:
         self.place_random_tile()
         self.print_matrix(surf)
 
-    def is_score(self) -> bool:
+    def score_reached_criterium(self) -> bool:
         """
         Checks if score 2048 was acomplished somewhere in matrix.
         """

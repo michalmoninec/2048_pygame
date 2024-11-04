@@ -1,7 +1,7 @@
 import pygame as pg
 
 from game import Game
-from sprites.monte_carlo import MonteCarlo
+from simulations.monte_carlo import MonteCarlo
 
 from pygame import Surface
 

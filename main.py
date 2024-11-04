@@ -1,19 +1,18 @@
 import threading
 import pygame as pg
-import asyncio
 import copy
-
 
 from pygame import Surface
 
 from game import Game
 from graphics.screen import Screen
-from sprites.monte_carlo import MonteCarlo
+from simulations.monte_carlo import MonteCarlo
 
 
 def main() -> None:
     """
-    Initialization setup for pygame, screen, game and mt simultaion.
+    Initialization setup for pygame, screen, game and mt simultaion classes.
+    Runs main loop with initialized classes.
     """
     try:
         pg.init()
@@ -86,6 +85,7 @@ def mt_simulation(
 ) -> None:
     """
     Simulation choose direction based on best score of random movement till game is over.
+    Runs as a thread. Manual termination with footer handle.
     """
     screen.last = "simulation"
     while (
@@ -108,7 +108,7 @@ def mt_simulation(
 
 def surface_setup(screen: Screen, score: int) -> Surface:
     """
-    Setup helper for menu creation, window resolution and score cap.
+    Setup helper for inital screen creation, window resolution and score cap.
     """
     score_view = "2048 score: " + str(score)
     pg.display.set_caption(score_view)
