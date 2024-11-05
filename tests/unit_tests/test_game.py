@@ -18,17 +18,14 @@ def empty_matrix():
     return [[0 for _ in range(4)] for _ in range(4)]
 
 
-def pygame_init(func):
+@pytest.fixture(scope="session", autouse=True)
+def pygame_init_and_teardown():
     """
     Pygame initialization decorator.
     """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        pygame.init()
-        return func(*args, **kwargs)
-
-    return wrapper
+    pygame.init()
+    yield
+    pygame.quit()
 
 
 @pytest.fixture
@@ -124,7 +121,6 @@ def dirs():
     return [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]
 
 
-@pygame_init
 def test_class_init(matrices: dict[str, list[list[int]]]):
     """
     Tests initialization of Game class.
