@@ -18,11 +18,11 @@ def empty_matrix():
     return [[0 for _ in range(4)] for _ in range(4)]
 
 
-def test_class_init(matrices: dict[str, list[list[int]]]):
+def test_class_init(surface, matrices: dict[str, list[list[int]]]):
     """
     Tests initialization of Game class.
     """
-    game = Game()
+    game = Game(surface)
     assert game.matrix == matrices["empty_matrix"]
     assert game.board_size == 4
     assert type(game.myfont) == type(pygame.font.SysFont("monospace", 30, bold="true"))
@@ -216,11 +216,11 @@ def test_score_reached_criterium(game: Game, matrices):
     """
     Tests that while reaching value 2048, function returns True.
     """
-    game.matrix = copy_matrix(matrices["crit"]["above"])
+    game.matrix = copy_matrix(matrices["win_crit"]["above"])
     assert game.score_reached_criterium() == False
 
-    game.matrix = copy_matrix(matrices["crit"]["below"])
+    game.matrix = copy_matrix(matrices["win_crit"]["below"])
     assert game.score_reached_criterium() == False
 
-    game.matrix = copy_matrix(matrices["crit"]["exac"])
+    game.matrix = copy_matrix(matrices["win_crit"]["exac"])
     assert game.score_reached_criterium() == True

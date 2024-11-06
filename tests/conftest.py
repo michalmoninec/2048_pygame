@@ -28,11 +28,11 @@ def pygame_init_and_teardown():
 
 
 @pytest.fixture
-def game():
+def game(surface):
     """
     Prepares and returns Game.
     """
-    return Game()
+    return Game(surface)
 
 
 @pytest.fixture
@@ -44,10 +44,13 @@ def screen():
 
 
 @pytest.fixture
-def surface(screen: Screen):
+def surface(screen, mock_method):
     """
     Prepares and return Surface.
+    Functions that render window are mocked for the tests.
     """
+    mock_method(pygame.display, "set_mode")
+    mock_method(Screen, "create_menu")
 
     return surface_setup(screen, 0)
 
@@ -107,7 +110,7 @@ def matrices():
             pygame.K_LEFT: invalid_left,
             pygame.K_RIGHT: invalid_right,
         },
-        "crit": {
+        "win_crit": {
             "above": crit_above,
             "below": crit_below,
             "exac": crit_exac,
@@ -146,3 +149,13 @@ def mc_init_attrs():
 @pytest.fixture
 def pygame_font_type():
     return type(pygame.font.SysFont("monospace", 30, bold="true"))
+
+
+@pytest.fixture
+def mock_method(mocker, request):
+    def mock_wrapper(obj, class_method, return_value=None):
+        mock_method = mocker.patch.object(obj, class_method, return_value=return_value)
+        request.addfinalizer(lambda: mocker.stop(mock_method))
+        return mock_method
+
+    return mock_wrapper

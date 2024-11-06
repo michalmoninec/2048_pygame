@@ -20,9 +20,9 @@ def main() -> None:
         exit()
 
     screen = Screen()
-    game = Game()
     monte_carlo = MonteCarlo()
     surf = surface_setup(screen, 0)
+    game = Game(surf)
     game.place_initial_random_tiles()
 
     main_loop(screen, game, monte_carlo, surf)
@@ -113,6 +113,7 @@ def surface_setup(screen: Screen, score: int) -> Surface:
     """
     Setup helper for inital screen creation, window resolution and score cap.
     """
+    pg.display.init()
     score_view = "2048 score: " + str(score)
     pg.display.set_caption(score_view)
 

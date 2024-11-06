@@ -9,7 +9,7 @@ from graphics.colours import colour_dict
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, surf: Surface):
         """
         Initializes empty matrix, and game parameters.
         """
@@ -24,28 +24,37 @@ class Game:
         self.is_win = False
         self.player_screen = False
         self.caption_score = None
+        self.surf = surf
 
-    def run_game(self, dir: int, surf: Surface) -> bool:
+    def run_game(self, dir: int) -> bool:
         """
         Updates game state with provided direction.
         Returns true if valid move, false if invalid.
         """
+        if dir is None:
+            raise ValueError("Directory must be provided.")
+
         if self.player_start:
             if self.game_possible_movement() and not self.game_over:
                 if self.move_in_direction(dir, self.matrix):
                     self.place_random_tile()
 
                 if self.score_reached_criterium():
-                    pygame.draw.rect(surf, (255, 255, 255), (100, 170, 210, 60))
-                    label = self.my_font.render("YOU WON", 1, (0, 0, 255))
-                    surf.blit(label, (110, 185, 100, 60))
-                    time.sleep(2)
+                    self.print_win_label()
             else:
                 self.game_over = True
                 return False
+        else:
+            return False
         return True
 
-    def print_matrix(self, surf: Surface) -> None:
+    def print_win_label(self):
+        pygame.draw.rect(self.surf, (255, 255, 255), (100, 170, 210, 60))
+        label = self.myfont.render("YOU WON", 1, (0, 0, 255))
+        self.surf.blit(label, (110, 185, 100, 60))
+        time.sleep(2)
+
+    def print_matrix(self) -> None:
         """
         Print game matrix with corresponding numbers inside cells.
         Each number has it's own colour.
@@ -53,7 +62,7 @@ class Game:
         for col in range(self.board_size):
             for row in range(self.board_size):
                 pygame.draw.rect(
-                    surf,
+                    self.surf,
                     colour_dict[self.matrix[col][row]],
                     (
                         row * self.tile_size,
@@ -65,7 +74,7 @@ class Game:
                 if self.matrix[col][row] != 0:
                     label = self.myfont.render(str(self.matrix[col][row]), 1, (0, 0, 0))
                     label_width, label_height = label.get_size()
-                    surf.blit(
+                    self.surf.blit(
                         label,
                         (
                             row * (400 / self.board_size)
