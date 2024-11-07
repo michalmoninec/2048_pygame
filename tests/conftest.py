@@ -7,6 +7,7 @@ import threading
 from game import Game
 from graphics.screen import Screen
 from main import surface_setup
+from simulations.monte_carlo import MonteCarlo
 
 
 def copy_matrix(matrix):
@@ -73,6 +74,11 @@ def mock_surface(screen, mock_method):
     mock_method(Screen, "create_menu")
 
     return surface_setup(screen, 0)
+
+
+@pytest.fixture
+def mcarlo():
+    return MonteCarlo()
 
 
 @pytest.fixture

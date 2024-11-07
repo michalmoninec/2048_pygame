@@ -1,6 +1,2 @@
-from simulations.monte_carlo import MonteCarlo
-
-
-# TODO
-def test_get_direction():
-    pass
+def test_get_direction(mcarlo):
+    assert mcarlo.start == False

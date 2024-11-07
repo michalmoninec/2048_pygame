@@ -1,7 +1,6 @@
 from graphics.screen import Screen
 
 
-#   TODO
 def test_init(pygame_font_type):
     """
     Tests init method of Screen class.

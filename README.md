@@ -16,4 +16,5 @@ Two modes available: singleplayer and MCTS simulation.
 
 ## TODO:
 
+-   Tests
 -   MCTS improvement.
