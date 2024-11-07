@@ -1,38 +1,38 @@
 import pytest
 
 from game import Game
-from tests.conftest import copy_matrix
+from tests.conftest import copy_matrix, non_zero_cells
 
 
-def test_run_game_value_error(game):
+def test_run_game_value_error(mock_game):
     """
     Tests that None direction raises ValueError.
     """
     with pytest.raises(ValueError):
-        assert game.run_game(None)
+        assert mock_game.run_game(None)
 
 
-def test_run_not_start(game, dirs, mock_method):
+def test_run_not_start(mock_game, dirs):
     """
     Tests that when attribute 'player_start' is False function returns False, but wont affect attribute 'game_over'.
     """
     for dir in dirs:
-        assert game.run_game(dir) == False
-        assert game.game_over == False
+        assert mock_game.run_game(dir) == False
+        assert mock_game.game_over == False
 
 
-def test_run_game_all_invalid_moves(game, dirs):
+def test_run_game_all_invalid_moves(mock_game, dirs):
     """
     Tests that for True value of atribute 'player_start' function evaluates movement in provided direction.
     Based on matrix with no possible movement function should return False and mutate 'game_over' to False value.
     """
-    game.player_start = True
+    mock_game.player_start = True
     for dir in dirs:
-        assert game.run_game(dir) == False
-        assert game.game_over == True
+        assert mock_game.run_game(dir) == False
+        assert mock_game.game_over == True
 
 
-def test_run_game_all_valid_moves(game, dirs, matrices, mock_method):
+def test_run_game_all_valid_moves(mock_game, dirs, matrices, mock_method):
     """
     Tests that for True value of atribute 'player_start' function evaluates movement in provided direction.
     Based od matrix with possible movement in all directions function should:
@@ -47,18 +47,19 @@ def test_run_game_all_valid_moves(game, dirs, matrices, mock_method):
     mocked_crit = mock_method(Game, "score_reached_criterium")
     mocked_print_label = mock_method(Game, "print_win_label")
 
-    game.player_start = True
+    mock_game.player_start = True
+    assert mock_game.game_over == False
     for dir in dirs:
-        game.matrix = copy_matrix(matrices["valid_template"])
-        assert game.run_game(dir) == True
-        assert game.game_over == False
+        mock_game.matrix = copy_matrix(matrices["valid_template"])
+        assert mock_game.run_game(dir) == True
+        assert mock_game.game_over == False
 
     assert mocked_tiles.call_count == len(dirs)
     assert mocked_crit.call_count == len(dirs)
     assert mocked_print_label.call_count == 0
 
 
-def test_run_game_all_valid_print_win(game, dirs, matrices, mock_method):
+def test_run_game_all_valid_print_win(mock_game, dirs, matrices, mock_method):
     """
     Tests that for True value of atribute 'player_start' function evaluates movement in provided direction.
     Based od matrix with possible movement in all directions function should:
@@ -72,11 +73,32 @@ def test_run_game_all_valid_print_win(game, dirs, matrices, mock_method):
     mocked_print_label = mock_method(Game, "print_win_label")
     mocked_crit = mock_method(Game, "score_reached_criterium", return_value=True)
 
-    game.player_start = True
-
+    mock_game.player_start = True
+    assert mock_game.game_over == False
     for dir in dirs:
-        game.matrix = copy_matrix(matrices["valid_template"])
-        assert game.run_game(dir) == True
+        mock_game.matrix = copy_matrix(matrices["valid_template"])
+        assert mock_game.run_game(dir) == True
 
     assert mocked_print_label.call_count == len(dirs)
     assert mocked_crit.call_count == len(dirs)
+
+
+def test_print_matrix_no_values(game, matrices, mock_method):
+    mock_draw_rect = mock_method(Game, "draw_rect")
+    mock_fill_playground = mock_method(Game, "fill_playground")
+
+    game.print_matrix()
+
+    assert mock_draw_rect.call_count == len(game.matrix) ** 2
+    assert mock_fill_playground.call_count == 0
+
+
+def test_print_matrix_valid_values(game, matrices, mock_method):
+    mock_draw_rect = mock_method(Game, "draw_rect")
+    mock_fill_playground = mock_method(Game, "fill_playground")
+
+    game.matrix = copy_matrix(matrices["valid_template"])
+    game.print_matrix()
+
+    assert mock_draw_rect.call_count == len(game.matrix) ** 2
+    assert mock_fill_playground.call_count == non_zero_cells(game.matrix)

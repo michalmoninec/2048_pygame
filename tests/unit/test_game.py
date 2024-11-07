@@ -18,11 +18,11 @@ def empty_matrix():
     return [[0 for _ in range(4)] for _ in range(4)]
 
 
-def test_class_init(surface, matrices: dict[str, list[list[int]]]):
+def test_class_init(mock_surface, matrices: dict[str, list[list[int]]]):
     """
     Tests initialization of Game class.
     """
-    game = Game(surface)
+    game = Game(mock_surface)
     assert game.matrix == matrices["empty_matrix"]
     assert game.board_size == 4
     assert type(game.myfont) == type(pygame.font.SysFont("monospace", 30, bold="true"))
@@ -37,7 +37,7 @@ def test_class_init(surface, matrices: dict[str, list[list[int]]]):
 
 
 def test_initial_random_tiles_placement(
-    game: Game, matrices: dict[str, list[list[int]]]
+    mock_game: Game, matrices: dict[str, list[list[int]]]
 ):
     """
     Tests empty matrix at initialization.
@@ -45,182 +45,194 @@ def test_initial_random_tiles_placement(
     Then tests that matrix is not empty.
     Then tests that count of non empty cell is two.
     """
-    assert game.matrix == matrices["empty_matrix"]
-    tile1, tile2 = game.place_initial_random_tiles()
-    assert game.matrix != matrices["empty_matrix"]
+    assert mock_game.matrix == matrices["empty_matrix"]
+    tile1, tile2 = mock_game.place_initial_random_tiles()
+    assert mock_game.matrix != matrices["empty_matrix"]
 
-    assert sum(sum(sub_matrix) for sub_matrix in game.matrix) != 0
+    assert sum(sum(sub_matrix) for sub_matrix in mock_game.matrix) != 0
 
     i, j, k = tile1
-    assert game.matrix[i][j] == k
+    assert mock_game.matrix[i][j] == k
     i, j, k = tile2
-    assert game.matrix[i][j] == k
+    assert mock_game.matrix[i][j] == k
 
 
-def test_transpose(game: Game, matrices: dict[str, list[list[int]]]):
+def test_transpose(mock_game: Game, matrices: dict[str, list[list[int]]]):
     """
     Tests transposition of matrix.
     """
     empty_matrix = matrices["empty_matrix"]
-    assert game.matrix == game.transpose(game.matrix)
+    assert mock_game.matrix == mock_game.transpose(mock_game.matrix)
 
-    game.matrix[0][0] = 2
-    game.matrix[1][1] = 2
-    game.matrix[2][2] = 2
-    game.matrix[3][3] = 2
+    mock_game.matrix[0][0] = 2
+    mock_game.matrix[1][1] = 2
+    mock_game.matrix[2][2] = 2
+    mock_game.matrix[3][3] = 2
 
-    assert game.matrix == game.transpose(game.matrix)
+    assert mock_game.matrix == mock_game.transpose(mock_game.matrix)
 
-    game.matrix = empty_matrix
-    for i in range(len(game.matrix)):
-        game.matrix[0][i] = 2
-        game.transpose(game.matrix)
-        assert game.matrix[i][0] == 2
+    mock_game.matrix = empty_matrix
+    for i in range(len(mock_game.matrix)):
+        mock_game.matrix[0][i] = 2
+        mock_game.transpose(mock_game.matrix)
+        assert mock_game.matrix[i][0] == 2
 
 
-def test_game_possible_movement(game: Game, matrices: dict[str, list[list[int]]]):
+def test_game_possible_movement(mock_game: Game, matrices: dict[str, list[list[int]]]):
     """
     Tests if there is any possible movement.
     """
 
-    assert game.game_possible_movement() == False
-    game.matrix[0][0] = 2
-    assert game.game_possible_movement() == True
+    assert mock_game.game_possible_movement() == False
+    mock_game.matrix[0][0] = 2
+    assert mock_game.game_possible_movement() == True
 
     end_matrix = matrices["end_matrix"]
-    assert game.game_possible_movement(end_matrix) == False
+    assert mock_game.game_possible_movement(end_matrix) == False
 
-    game.matrix = copy_matrix(matrices["end_matrix"])
-    game.matrix[0][0] = 99
-    game.matrix[0][1] = 99
-    assert game.game_possible_movement(game.matrix) == True
+    mock_game.matrix = copy_matrix(matrices["end_matrix"])
+    mock_game.matrix[0][0] = 99
+    mock_game.matrix[0][1] = 99
+    assert mock_game.game_possible_movement(mock_game.matrix) == True
 
-    game.matrix = copy_matrix(matrices["end_matrix"])
-    game.matrix[0][0] = 99
-    game.matrix[1][0] = 99
-    assert game.game_possible_movement(game.matrix) == True
+    mock_game.matrix = copy_matrix(matrices["end_matrix"])
+    mock_game.matrix[0][0] = 99
+    mock_game.matrix[1][0] = 99
+    assert mock_game.game_possible_movement(mock_game.matrix) == True
 
-    game.matrix = matrices["empty_matrix"]
-    for i in range(len(game.matrix) - 1):
-        for j in range(len(game.matrix[i]) - 1):
-            game.matrix = copy_matrix(matrices["empty_matrix"])
-            assert game.game_possible_movement(game.matrix) == False
-            game.matrix[i][j] = game.matrix[i + 1][j] = 99
-            assert game.game_possible_movement(game.matrix) == True
+    mock_game.matrix = matrices["empty_matrix"]
+    for i in range(len(mock_game.matrix) - 1):
+        for j in range(len(mock_game.matrix[i]) - 1):
+            mock_game.matrix = copy_matrix(matrices["empty_matrix"])
+            assert mock_game.game_possible_movement(mock_game.matrix) == False
+            mock_game.matrix[i][j] = mock_game.matrix[i + 1][j] = 99
+            assert mock_game.game_possible_movement(mock_game.matrix) == True
 
 
-def test_compress(game: Game):
+def test_compress(mock_game: Game):
     """
     Tests compression, which should move all numbers to the left in a list.
     """
     input_row = [1, 0, 1, 0]
     output_row = [1, 1, 0, 0]
 
-    assert game.compress(input_row) == output_row
-    assert game.compress([]) == []
+    assert mock_game.compress(input_row) == output_row
+    assert mock_game.compress([]) == []
 
 
-def test_merge(game: Game):
+def test_merge(mock_game: Game):
     """
     Tests that same neighbour merge together and creates zero value behind merge.
     """
-    assert game.merge([]) == []
-    assert game.merge([2, 2, 2, 2]) == [4, 0, 4, 0]
-    assert game.merge([2, 0, 2, 2]) == [2, 0, 4, 0]
-    assert game.merge([2, 4, 8, 16]) == ([2, 4, 8, 16])
+    assert mock_game.merge([]) == []
+    assert mock_game.merge([2, 2, 2, 2]) == [4, 0, 4, 0]
+    assert mock_game.merge([2, 0, 2, 2]) == [2, 0, 4, 0]
+    assert mock_game.merge([2, 4, 8, 16]) == ([2, 4, 8, 16])
 
 
-def test_move_left(game: Game, matrices: dict[str, list[list[int]]]):
+def test_move_left(mock_game: Game, matrices: dict[str, list[list[int]]]):
     """
     Tests if elements in matrix move to the left correctly.
     """
-    game.matrix = copy_matrix(matrices["empty_matrix"])
-    assert game.move_left(game.matrix) == matrices["empty_matrix"]
+    mock_game.matrix = copy_matrix(matrices["empty_matrix"])
+    assert mock_game.move_left(mock_game.matrix) == matrices["empty_matrix"]
 
-    game.matrix = copy_matrix(matrices["valid_template"])
-    assert game.move_left(game.matrix) == matrices["valid_matrices"][pygame.K_LEFT]
+    mock_game.matrix = copy_matrix(matrices["valid_template"])
+    assert (
+        mock_game.move_left(mock_game.matrix)
+        == matrices["valid_matrices"][pygame.K_LEFT]
+    )
 
 
-def test_move_up(game: Game, matrices: dict[str, list[list[int]]]):
+def test_move_up(mock_game: Game, matrices: dict[str, list[list[int]]]):
     """
     Tests if elements in matrix move up correctly.
     """
-    game.matrix = copy_matrix(matrices["empty_matrix"])
-    assert game.move_up(game.matrix) == matrices["empty_matrix"]
+    mock_game.matrix = copy_matrix(matrices["empty_matrix"])
+    assert mock_game.move_up(mock_game.matrix) == matrices["empty_matrix"]
 
-    game.matrix = copy_matrix(matrices["valid_template"])
-    assert game.move_up(game.matrix) == matrices["valid_matrices"][pygame.K_UP]
+    mock_game.matrix = copy_matrix(matrices["valid_template"])
+    assert (
+        mock_game.move_up(mock_game.matrix) == matrices["valid_matrices"][pygame.K_UP]
+    )
 
 
-def test_move_right(game: Game, matrices: dict[str, list[list[int]]]):
+def test_move_right(mock_game: Game, matrices: dict[str, list[list[int]]]):
     """
     Tests if elements in matrix move up correctly.
     """
-    game.matrix = copy_matrix(matrices["empty_matrix"])
-    assert game.move_right(game.matrix) == matrices["empty_matrix"]
+    mock_game.matrix = copy_matrix(matrices["empty_matrix"])
+    assert mock_game.move_right(mock_game.matrix) == matrices["empty_matrix"]
 
-    game.matrix = copy_matrix(matrices["valid_template"])
-    assert game.move_right(game.matrix) == matrices["valid_matrices"][pygame.K_RIGHT]
+    mock_game.matrix = copy_matrix(matrices["valid_template"])
+    assert (
+        mock_game.move_right(mock_game.matrix)
+        == matrices["valid_matrices"][pygame.K_RIGHT]
+    )
 
 
-def test_move_down(game: Game, matrices: dict[str, list[list[int]]]):
+def test_move_down(mock_game: Game, matrices: dict[str, list[list[int]]]):
     """
     Tests if elements in matrix move up correctly.
     """
-    game.matrix = copy_matrix(matrices["empty_matrix"])
-    assert game.move_down(game.matrix) == matrices["empty_matrix"]
+    mock_game.matrix = copy_matrix(matrices["empty_matrix"])
+    assert mock_game.move_down(mock_game.matrix) == matrices["empty_matrix"]
 
-    game.matrix = copy_matrix(matrices["valid_template"])
-    assert game.move_down(game.matrix) == matrices["valid_matrices"][pygame.K_DOWN]
+    mock_game.matrix = copy_matrix(matrices["valid_template"])
+    assert (
+        mock_game.move_down(mock_game.matrix)
+        == matrices["valid_matrices"][pygame.K_DOWN]
+    )
 
 
 def test_move_in_direction(
-    game: Game, matrices: dict[str, list[list[int]]], dirs: list[int]
+    mock_game: Game, matrices: dict[str, list[list[int]]], dirs: list[int]
 ):
     for dir in dirs:
-        game.matrix = copy_matrix(matrices["empty_matrix"])
-        assert game.move_in_direction(dir, game.matrix) == None
+        mock_game.matrix = copy_matrix(matrices["empty_matrix"])
+        assert mock_game.move_in_direction(dir, mock_game.matrix) == None
 
     for dir in dirs:
-        game.matrix = copy_matrix(matrices["valid_template"])
+        mock_game.matrix = copy_matrix(matrices["valid_template"])
         assert (
-            game.move_in_direction(dir, game.matrix) == matrices["valid_matrices"][dir]
+            mock_game.move_in_direction(dir, mock_game.matrix)
+            == matrices["valid_matrices"][dir]
         )
 
 
 def test_move_in_direction_possible(
-    game: Game, matrices: dict[str, list[list[int]]], dirs: list[int]
+    mock_game: Game, matrices: dict[str, list[list[int]]], dirs: list[int]
 ):
     """
     Tests invalid movement with empty matrix.
     Tests valid movement for each direction with two same values in corresponding direction.
     """
     for dir in dirs:
-        assert game.move_in_direction_possible(dir, game.matrix) == False
+        assert mock_game.move_in_direction_possible(dir, mock_game.matrix) == False
 
-    game.matrix = copy_matrix(matrices["valid_template"])
+    mock_game.matrix = copy_matrix(matrices["valid_template"])
     for dir in dirs:
-        assert game.move_in_direction_possible(dir, game.matrix) == True
+        assert mock_game.move_in_direction_possible(dir, mock_game.matrix) == True
 
 
-def test_reset_matrix(game: Game, matrices: dict[str, Any], surface):
+def test_reset_matrix(mock_game: Game, matrices: dict[str, Any], mock_surface):
     """
     Tests that reseting matrix is correct.
     """
-    game.matrix = copy_matrix(matrices["end_matrix"])
-    game.reset_matrix()
-    assert game.matrix != matrices["end_matrix"]
+    mock_game.matrix = copy_matrix(matrices["end_matrix"])
+    mock_game.reset_matrix()
+    assert mock_game.matrix != matrices["end_matrix"]
 
 
-def test_score_reached_criterium(game: Game, matrices):
+def test_score_reached_criterium(mock_game: Game, matrices):
     """
     Tests that while reaching value 2048, function returns True.
     """
-    game.matrix = copy_matrix(matrices["win_crit"]["above"])
-    assert game.score_reached_criterium() == False
+    mock_game.matrix = copy_matrix(matrices["win_crit"]["above"])
+    assert mock_game.score_reached_criterium() == False
 
-    game.matrix = copy_matrix(matrices["win_crit"]["below"])
-    assert game.score_reached_criterium() == False
+    mock_game.matrix = copy_matrix(matrices["win_crit"]["below"])
+    assert mock_game.score_reached_criterium() == False
 
-    game.matrix = copy_matrix(matrices["win_crit"]["exac"])
-    assert game.score_reached_criterium() == True
+    mock_game.matrix = copy_matrix(matrices["win_crit"]["exac"])
+    assert mock_game.score_reached_criterium() == True

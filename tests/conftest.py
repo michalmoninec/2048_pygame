@@ -17,6 +17,10 @@ def empty_matrix():
     return [[0 for _ in range(4)] for _ in range(4)]
 
 
+def non_zero_cells(matrix):
+    return sum(1 for row in matrix for cell in row if cell != 0)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def pygame_init_and_teardown():
     """
@@ -36,6 +40,14 @@ def game(surface):
 
 
 @pytest.fixture
+def mock_game(mock_surface):
+    """
+    Prepares and returns Game initialized with mocked surface.
+    """
+    return Game(mock_surface)
+
+
+@pytest.fixture
 def screen():
     """
     Prepares and returns Screen.
@@ -44,9 +56,17 @@ def screen():
 
 
 @pytest.fixture
-def surface(screen, mock_method):
+def surface(screen):
     """
     Prepares and return Surface.
+    """
+    return surface_setup(screen, 0)
+
+
+@pytest.fixture
+def mock_surface(screen, mock_method):
+    """
+    Prepares and return mocked Surface.
     Functions that render window are mocked for the tests.
     """
     mock_method(pygame.display, "set_mode")

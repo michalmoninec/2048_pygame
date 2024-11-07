@@ -61,7 +61,7 @@ class Game:
         """
         for col in range(self.board_size):
             for row in range(self.board_size):
-                pygame.draw.rect(
+                self.draw_rect(
                     self.surf,
                     colour_dict[self.matrix[col][row]],
                     (
@@ -72,17 +72,7 @@ class Game:
                     ),
                 )
                 if self.matrix[col][row] != 0:
-                    label = self.myfont.render(str(self.matrix[col][row]), 1, (0, 0, 0))
-                    label_width, label_height = label.get_size()
-                    self.surf.blit(
-                        label,
-                        (
-                            row * (400 / self.board_size)
-                            + (400 / self.board_size - label_width) / 2,
-                            col * (400 / self.board_size)
-                            + (400 / self.board_size - label_height) / 2,
-                        ),
-                    )
+                    self.fill_playground(col, row)
 
     def place_random_tile(self, matrix: List[List[int]] = None) -> Tuple[int, int, int]:
         """
@@ -269,3 +259,23 @@ class Game:
                         self.is_win = True
                         return True
         return False
+
+    def draw_rect(self, surf: Surface, color: Tuple, size: Tuple):
+        pygame.draw.rect(
+            surf,
+            color,
+            size,
+        )
+
+    def fill_playground(self, col, row):
+        label = self.myfont.render(str(self.matrix[col][row]), 1, (0, 0, 0))
+        label_width, label_height = label.get_size()
+        self.surf.blit(
+            label,
+            (
+                row * (400 / self.board_size)
+                + (400 / self.board_size - label_width) / 2,
+                col * (400 / self.board_size)
+                + (400 / self.board_size - label_height) / 2,
+            ),
+        )
