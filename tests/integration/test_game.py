@@ -83,22 +83,22 @@ def test_run_game_all_valid_print_win(mock_game, dirs, matrices, mock_method):
     assert mocked_crit.call_count == len(dirs)
 
 
-def test_print_matrix_no_values(game, matrices, mock_method):
+def test_print_matrix_no_values(mock_game, matrices, mock_method):
     mock_draw_rect = mock_method(Game, "draw_rect")
     mock_fill_playground = mock_method(Game, "fill_playground")
 
-    game.print_matrix()
+    mock_game.print_matrix()
 
-    assert mock_draw_rect.call_count == len(game.matrix) ** 2
+    assert mock_draw_rect.call_count == len(mock_game.matrix) ** 2
     assert mock_fill_playground.call_count == 0
 
 
-def test_print_matrix_valid_values(game, matrices, mock_method):
+def test_print_matrix_valid_values(mock_game, matrices, mock_method):
     mock_draw_rect = mock_method(Game, "draw_rect")
     mock_fill_playground = mock_method(Game, "fill_playground")
 
-    game.matrix = copy_matrix(matrices["valid_template"])
-    game.print_matrix()
+    mock_game.matrix = copy_matrix(matrices["valid_template"])
+    mock_game.print_matrix()
 
-    assert mock_draw_rect.call_count == len(game.matrix) ** 2
-    assert mock_fill_playground.call_count == non_zero_cells(game.matrix)
+    assert mock_draw_rect.call_count == len(mock_game.matrix) ** 2
+    assert mock_fill_playground.call_count == non_zero_cells(mock_game.matrix)

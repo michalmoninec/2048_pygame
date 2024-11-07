@@ -18,6 +18,10 @@ def empty_matrix():
     return [[0 for _ in range(4)] for _ in range(4)]
 
 
+def end_matrix():
+    return [[i + j for i in range(1, 5)] for j in range(0, 16, 4)]
+
+
 def non_zero_cells(matrix):
     return sum(1 for row in matrix for cell in row if cell != 0)
 
@@ -120,9 +124,15 @@ def matrices():
     crit_exac = empty_matrix()
     crit_exac[0][0] = 2048
 
+    mc_valid_move_left_and_right = end_matrix()
+    mc_valid_move_left_and_right[0][0] = mc_valid_move_left_and_right[0][1] = 2048
+
+    mc_valid_move_up_and_down = end_matrix()
+    mc_valid_move_up_and_down[0][0] = mc_valid_move_up_and_down[1][0] = 2048
+
     return {
         "empty_matrix": empty_matrix(),
-        "end_matrix": [[i + j for i in range(1, 5)] for j in range(0, 16, 4)],
+        "end_matrix": end_matrix(),
         "valid_template": valid_matrix,
         "valid_matrices": {
             pygame.K_UP: valid_up,
@@ -140,6 +150,10 @@ def matrices():
             "above": crit_above,
             "below": crit_below,
             "exac": crit_exac,
+        },
+        "mc_valid": {
+            "mc_valid_left_and_right": mc_valid_move_left_and_right,
+            "mc_valid_up_and_down": mc_valid_move_up_and_down,
         },
     }
 
