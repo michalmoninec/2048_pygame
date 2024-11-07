@@ -1,4 +1,5 @@
 import pygame as pg
+
 from tests.conftest import copy_matrix
 
 
@@ -15,7 +16,7 @@ def test_get_direction_invalid_all_movement(mock_game, matrices, mcarlo):
 
 def test_get_direction_valid_movement(mock_game, matrices, mcarlo):
     """
-    Tests, that for matrix, that has some valid movement return valu of direction is not None.
+    Tests, that for matrix, that has some valid movement return value of direction is not None.
     """
     mock_game.matrix = copy_matrix(matrices["valid_template"])
 

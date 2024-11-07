@@ -10,7 +10,7 @@ def get_attribute(obj: object, name: str):
     return None
 
 
-def test_init(mc_init_attrs):
+def test_init(mc_init_attrs: dict):
     """
     Tests initialization method of MonteCarlo class.
     """

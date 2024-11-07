@@ -1,13 +1,8 @@
-from typing import Any
 import pygame
-import pytest
-import copy
 
-from functools import wraps
+from typing import Any
 
 from game import Game
-from graphics.screen import Screen
-from main import surface_setup
 
 
 def copy_matrix(matrix):
@@ -18,7 +13,7 @@ def empty_matrix():
     return [[0 for _ in range(4)] for _ in range(4)]
 
 
-def test_class_init(mock_surface, matrices: dict[str, list[list[int]]]):
+def test_class_init(mock_surface: pygame.Surface, matrices: dict[str, list[list[int]]]):
     """
     Tests initialization of Game class.
     """
@@ -215,7 +210,9 @@ def test_move_in_direction_possible(
         assert mock_game.move_in_direction_possible(dir, mock_game.matrix) == True
 
 
-def test_reset_matrix(mock_game: Game, matrices: dict[str, Any], mock_surface):
+def test_reset_matrix(
+    mock_game: Game, matrices: dict[str, Any], mock_surface: pygame.Surface
+):
     """
     Tests that reseting matrix is correct.
     """
@@ -224,7 +221,7 @@ def test_reset_matrix(mock_game: Game, matrices: dict[str, Any], mock_surface):
     assert mock_game.matrix != matrices["end_matrix"]
 
 
-def test_score_reached_criterium(mock_game: Game, matrices):
+def test_score_reached_criterium(mock_game: Game, matrices: dict[str, Any]):
     """
     Tests that while reaching value 2048, function returns True.
     """

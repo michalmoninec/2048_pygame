@@ -1,6 +1,7 @@
 import pytest
 
 from game import Game
+
 from tests.conftest import copy_matrix, non_zero_cells
 
 
@@ -83,7 +84,11 @@ def test_run_game_all_valid_print_win(mock_game, dirs, matrices, mock_method):
     assert mocked_crit.call_count == len(dirs)
 
 
-def test_print_matrix_no_values(mock_game, matrices, mock_method):
+def test_print_matrix_no_values(mock_game, mock_method):
+    """
+    Tests, that with provided empty matrix, 'draw_rect' method would be called for all cells.
+    'fill_playground' would be called for non zero cells, therefore for an empty matrix, zero times.
+    """
     mock_draw_rect = mock_method(Game, "draw_rect")
     mock_fill_playground = mock_method(Game, "fill_playground")
 
@@ -94,6 +99,11 @@ def test_print_matrix_no_values(mock_game, matrices, mock_method):
 
 
 def test_print_matrix_valid_values(mock_game, matrices, mock_method):
+    """
+    Tests, that with provided empty matrix, 'draw_rect' method would be called for all cells.
+    'fill_playground' would be called for non zero cells, therefore for a non empty matrix,
+    number of calls would be equal to the number of non zero cells.
+    """
     mock_draw_rect = mock_method(Game, "draw_rect")
     mock_fill_playground = mock_method(Game, "fill_playground")
 
