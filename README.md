@@ -7,6 +7,24 @@ Two modes available: singleplayer and MCTS simulation.
 
 -   Needs simulation optimization.
 
+### Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run script
+
+```bash
+python main.py
+```
+
+### Run tests
+
+```bash
+pytest [-v] [-s]
+```
+
 ## Game
 
 -   Singleplayer movement with arrows.
@@ -16,5 +34,4 @@ Two modes available: singleplayer and MCTS simulation.
 
 ## TODO:
 
--   Tests
 -   MCTS improvement.
