@@ -82,7 +82,7 @@ class Screen:
                 monte_carlo.running = False
 
             game.reset_matrix()
-            game.print_matrix(surf)
+            game.print_matrix()
             self.create_footer(surf)
 
     def handle_menu(
@@ -104,7 +104,7 @@ class Screen:
             # monte_carlo.start = True
             monte_carlo.running = True
             game.reset_matrix()
-            game.print_matrix(surf)
+            game.print_matrix()
 
         elif self.menu_exit.collidepoint(x, y):
             pg.event.post(pg.event.Event(pg.QUIT))

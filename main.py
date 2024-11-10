@@ -38,10 +38,10 @@ def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface
             if screen.last == "simulation":
                 screen.last = "game"
                 game.reset_matrix()
-                game.print_matrix(surf)
+                # game.print_matrix(surf)
                 game.game_over = False
             game.caption_score = game.score
-            game.print_matrix(surf)
+            game.print_matrix()
 
         if game.game_over and (game.player_screen or monte_carlo.screen):
             screen.show_game_over(surf)
@@ -66,7 +66,7 @@ def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface
                     pg.K_LEFT,
                     pg.K_RIGHT,
                 ):
-                    game.run_game(event.key, surf)
+                    game.run_game(event.key)
 
             if event.type == pg.MOUSEBUTTONDOWN:
                 x, y = pg.mouse.get_pos()
@@ -101,7 +101,7 @@ def mt_simulation(
         if game.move_in_direction(dir, game.matrix):
             game.place_random_tile()
         game.start_random = True
-        game.print_matrix(surf)
+        game.print_matrix()
 
         game.caption_score = game.score
         pg.display.update()

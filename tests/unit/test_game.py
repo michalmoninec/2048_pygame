@@ -233,3 +233,11 @@ def test_score_reached_criterium(mock_game: Game, matrices: dict[str, Any]):
 
     mock_game.matrix = copy_matrix(matrices["win_crit"]["exac"])
     assert mock_game.score_reached_criterium() == True
+
+
+def test_game_possible_suspect(mock_game: Game, matrices: dict[str, Any]):
+    """
+    Test for one example that occured while manual testing.
+    """
+    mock_game.matrix = copy_matrix(matrices["invalid_matrices"]["suspect_matrix"])
+    assert mock_game.game_possible_movement() == True

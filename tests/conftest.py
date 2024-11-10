@@ -37,11 +37,11 @@ def pygame_init_and_teardown():
 
 
 @pytest.fixture
-def game(surface):
+def game(mock_surface):
     """
     Prepares and returns Game.
     """
-    return Game(surface)
+    return Game(mock_surface)
 
 
 @pytest.fixture
@@ -78,6 +78,14 @@ def mock_surface(screen, mock_method):
     mock_method(Screen, "create_menu")
 
     return surface_setup(screen, 0)
+
+
+@pytest.fixture
+def mock_graphics(mock_method):
+    mock_method(pygame.display, "update")
+    mock_method(pygame.display, "flip")
+    mock_method(Game, "print_matrix")
+    mock_method(Game, "print_win_label")
 
 
 @pytest.fixture
@@ -118,6 +126,12 @@ def matrices():
     invalid_down = empty_matrix()
     invalid_down[3][0] = 4
 
+    suspec_matrix = empty_matrix()
+    suspec_matrix[0][0] = 2
+    suspec_matrix[0][1] = 4
+    suspec_matrix[0][2] = 8
+    suspec_matrix[0][3] = 16
+
     crit_below = empty_matrix()
     crit_above = empty_matrix()
     crit_above[0][0] = 4096
@@ -129,6 +143,12 @@ def matrices():
 
     mc_valid_move_up_and_down = end_matrix()
     mc_valid_move_up_and_down[0][0] = mc_valid_move_up_and_down[1][0] = 2048
+
+    last_valid_left = end_matrix()
+    last_valid_left[3][3] = last_valid_left[3][2] = 1024
+
+    last_valid_up = end_matrix()
+    last_valid_up[3][3] = last_valid_up[2][3] = 1024
 
     return {
         "empty_matrix": empty_matrix(),
@@ -145,6 +165,7 @@ def matrices():
             pygame.K_DOWN: invalid_down,
             pygame.K_LEFT: invalid_left,
             pygame.K_RIGHT: invalid_right,
+            "suspect_matrix": suspec_matrix,
         },
         "win_crit": {
             "above": crit_above,
@@ -154,6 +175,10 @@ def matrices():
         "mc_valid": {
             "mc_valid_left_and_right": mc_valid_move_left_and_right,
             "mc_valid_up_and_down": mc_valid_move_up_and_down,
+        },
+        "last_valid": {
+            pygame.K_UP: last_valid_up,
+            pygame.K_LEFT: last_valid_left,
         },
     }
 
@@ -193,8 +218,10 @@ def pygame_font_type():
 
 @pytest.fixture
 def mock_method(mocker, request):
-    def mock_wrapper(obj, class_method, return_value=None):
-        mock_method = mocker.patch.object(obj, class_method, return_value=return_value)
+    def mock_wrapper(obj, class_method, return_value=None, side_effect=None):
+        mock_method = mocker.patch.object(
+            obj, class_method, return_value=return_value, side_effect=side_effect
+        )
         request.addfinalizer(lambda: mocker.stop(mock_method))
         return mock_method
 

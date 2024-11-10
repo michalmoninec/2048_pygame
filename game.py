@@ -41,6 +41,9 @@ class Game:
 
                 if self.score_reached_criterium():
                     self.print_win_label()
+
+                if not self.game_possible_movement():
+                    self.game_over = True
             else:
                 self.game_over = True
                 return False
@@ -121,6 +124,10 @@ class Game:
             matrix = self.matrix
 
         for row in matrix:
+            if 0 in row and sum(row) > 0:
+                return True
+
+        for row in self.transpose(copy.deepcopy(matrix)):
             if 0 in row and sum(row) > 0:
                 return True
 
