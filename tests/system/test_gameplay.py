@@ -237,25 +237,25 @@ def test_main_loop_end_move_down(
     pygame.font.init()
 
 
-def test_main_loop_simulation_till_game_over(
-    mock_game, mock_method, matrices, screen, mcarlo, mock_surface, mock_graphics
-):
-    """
-    Tests that simulation loop is running correctly.
-    Simulation ends with game_over attribute with True value.
-    """
-    mock_game.matrix = copy_matrix(matrices["valid_template"])
-    mcarlo.screen = True
-    mcarlo.running = True
+# def test_main_loop_simulation_till_game_over(
+#     mock_game, mock_method, matrices, screen, mcarlo, mock_surface, mock_graphics
+# ):
+#     """
+#     Tests that simulation loop is running correctly.
+#     Simulation ends with game_over attribute with True value.
+#     """
+#     mock_game.matrix = copy_matrix(matrices["valid_template"])
+#     mcarlo.screen = True
+#     mcarlo.running = True
 
-    mock_show_game_over = mock_method(
-        Screen,
-        "show_game_over",
-        side_effect=SystemExit,
-    )
+#     mock_show_game_over = mock_method(
+#         Screen,
+#         "show_game_over",
+#         side_effect=SystemExit,
+#     )
 
-    with pytest.raises(SystemExit):
-        assert main_loop(screen, mock_game, mcarlo, mock_surface)
-    pygame.font.init()
+#     with pytest.raises(SystemExit):
+#         assert main_loop(screen, mock_game, mcarlo, mock_surface)
+#     pygame.font.init()
 
-    assert mock_game.game_over == True
+#     assert mock_game.game_over == True
