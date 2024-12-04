@@ -194,7 +194,7 @@ def mc_init_attrs():
         "values": {
             "start": False,
             "running": False,
-            "iteration_cnt": 20,
+            "iteration_cnt": 100,
             "matrix_list": [],
             "score_up": [0],
             "score_down": [0],
