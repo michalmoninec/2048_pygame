@@ -10,8 +10,7 @@ from simulations.monte_carlo import MonteCarlo
 
 
 def main() -> None:
-    """
-    Initialization setup for pygame, screen, game and mt simultaion classes.
+    """Initialization setup for pygame, screen, game and mt simultaion classes.
     Runs main loop with initialized classes.
     """
     try:
@@ -29,9 +28,7 @@ def main() -> None:
 
 
 def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface):
-    """
-    Main loop handles game state, event handling, simulation state.
-    """
+    """Main loop handles game state, event handling, simulation state."""
     running = True
     while running:
         if game.player_start:
@@ -85,8 +82,7 @@ def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface
 def mt_simulation(
     monte_carlo: MonteCarlo, game: Game, surf: Surface, screen: Screen
 ) -> None:
-    """
-    Simulation choose direction based on best score of random movement till game is over.
+    """Simulation choose direction based on best score of random movement till game is over.
     Runs as a thread. Manual termination with footer handle.
     """
     screen.last = "simulation"
@@ -110,9 +106,7 @@ def mt_simulation(
 
 
 def surface_setup(screen: Screen, score: int) -> Surface:
-    """
-    Setup helper for inital screen creation, window resolution and score cap.
-    """
+    """Setup helper for inital screen creation, window resolution and score cap."""
     pg.display.init()
     score_view = "2048 score: " + str(score)
     pg.display.set_caption(score_view)

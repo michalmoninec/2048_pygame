@@ -11,9 +11,7 @@ dirs = [pg.K_UP, pg.K_LEFT, pg.K_DOWN, pg.K_RIGHT]
 
 class MonteCarlo:
     def __init__(self):
-        """
-        Initialization of simulation with default state.
-        """
+        """Initialization of simulation with default state."""
         self.start = False
         self.running = False
         self.iteration_cnt = 20
@@ -29,8 +27,7 @@ class MonteCarlo:
         self.simulation_thread = None
 
     def get_direction(self, game: Game) -> int:
-        """
-        Chooses direction and then runs simulation until game is over.
+        """Chooses direction and then runs simulation until game is over.
         Direction with best acomplished score is selected and returned.
         """
         self.score_up = [0]
@@ -81,7 +78,6 @@ class MonteCarlo:
 
             del self.score_list_all[:]
 
-            # game.score = true_score
             return direction
         else:
             return None

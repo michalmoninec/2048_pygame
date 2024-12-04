@@ -8,15 +8,13 @@ from main import main_loop
 
 
 def post_mouse_down() -> None:
-    """
-    Returns pygame MOUSEBUTTONDOWN event.
-    """
+    """Returns pygame MOUSEBUTTONDOWN event."""
     return pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(100, 100))
 
 
 def event_seq() -> List[pygame.event.Event]:
-    """
-    Returns sequence of pygame mousebuttondown events, terminated with pygame QUIT event.
+    """Returns sequence of pygame mousebuttondown events, terminated
+    with pygame QUIT event.
     """
     return [
         post_mouse_down(),
@@ -33,8 +31,7 @@ def test_mousebuttondown_menu_trigger(
     mcarlo,
     mock_surface,
 ):
-    """
-    Tests, that after mousebutton event, application reacts correctly.
+    """Tests, that after mousebutton event, application reacts correctly.
     In this test, only handle_menu should be triggered.
     Simulates app navigation at main screen.
     """
@@ -62,8 +59,7 @@ def test_mousebuttondown_footer_trigger_player(
     mcarlo,
     mock_surface,
 ):
-    """
-    Tests, that after mousebutton event, application reacts correctly.
+    """Tests, that after mousebutton event, application reacts correctly.
     In this test, only handle_footer should be triggered.
     Simulatece app navigation with player mode screen.
     """
@@ -93,8 +89,7 @@ def test_mousebuttondown_footer_trigger_mcarlo(
     mcarlo,
     mock_surface,
 ):
-    """
-    Tests, that after mousebutton event, application reacts correctly.
+    """Tests, that after mousebutton event, application reacts correctly.
     In this test, only handle_footer should be triggered.
     Simulates app navigation with monte carlo screen active.
     """

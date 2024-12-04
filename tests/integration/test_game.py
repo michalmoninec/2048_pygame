@@ -6,16 +6,14 @@ from tests.conftest import copy_matrix, non_zero_cells
 
 
 def test_run_game_value_error(mock_game):
-    """
-    Tests that None direction raises ValueError.
-    """
+    """Tests that None direction raises ValueError."""
     with pytest.raises(ValueError):
         assert mock_game.run_game(None)
 
 
 def test_run_not_start(mock_game, dirs):
-    """
-    Tests that when attribute 'player_start' is False function returns False, but wont affect attribute 'game_over'.
+    """Tests that when attribute 'player_start' is False function returns False,
+    but wont affect attribute 'game_over'.
     """
     for dir in dirs:
         assert mock_game.run_game(dir) == False
@@ -23,9 +21,10 @@ def test_run_not_start(mock_game, dirs):
 
 
 def test_run_game_all_invalid_moves(mock_game, dirs):
-    """
-    Tests that for True value of atribute 'player_start' function evaluates movement in provided direction.
-    Based on matrix with no possible movement function should return False and mutate 'game_over' to False value.
+    """Tests that for True value of atribute 'player_start' function
+    evaluates movement in provided direction.
+    Based on matrix with no possible movement function should return False
+    and mutate 'game_over' to False value.
     """
     mock_game.player_start = True
     for dir in dirs:
@@ -34,11 +33,12 @@ def test_run_game_all_invalid_moves(mock_game, dirs):
 
 
 def test_run_game_all_valid_moves(mock_game, dirs, matrices, mock_method):
-    """
-    Tests that for True value of atribute 'player_start' function evaluates movement in provided direction.
+    """Tests that for True value of atribute 'player_start' function
+    evaluates movement in provided direction.
     Based od matrix with possible movement in all directions function should:
     - Call method 'move_in_direction every time:
-    -- If it returns True, then call method 'place_random_tile' if it is possible to move in that direction:
+    -- If it returns True, then call method 'place_random_tile' if it is
+    possible to move in that direction:
     -- (For this example it should call it every time).
     - Call method 'score_reached_criterium' every time.
     -- If it returns True, then call method 'print_win_label'.
@@ -61,11 +61,12 @@ def test_run_game_all_valid_moves(mock_game, dirs, matrices, mock_method):
 
 
 def test_run_game_all_valid_print_win(mock_game, dirs, matrices, mock_method):
-    """
-    Tests that for True value of atribute 'player_start' function evaluates movement in provided direction.
+    """Tests that for True value of atribute 'player_start' function evaluates
+    movement in provided direction.
     Based od matrix with possible movement in all directions function should:
     - Call method 'move_in_direction every time:
-    -- If it returns True, then call method 'place_random_tile' if it is possible to move in that direction:
+    -- If it returns True, then call method 'place_random_tile' if it is
+    possible to move in that direction:
     -- (For this example it should call it every time).
     - Call method 'score_reached_criterium' every time.
     -- If it returns True, then call method 'print_win_label'.
@@ -85,9 +86,10 @@ def test_run_game_all_valid_print_win(mock_game, dirs, matrices, mock_method):
 
 
 def test_print_matrix_no_values(mock_game, mock_method):
-    """
-    Tests, that with provided empty matrix, 'draw_rect' method would be called for all cells.
-    'fill_playground' would be called for non zero cells, therefore for an empty matrix, zero times.
+    """Tests, that with provided empty matrix, 'draw_rect' method
+    would be called for all cells.
+    'fill_playground' would be called for non zero cells, therefore
+    for an empty matrix, zero times.
     """
     mock_draw_rect = mock_method(Game, "draw_rect")
     mock_fill_playground = mock_method(Game, "fill_playground")
@@ -99,9 +101,10 @@ def test_print_matrix_no_values(mock_game, mock_method):
 
 
 def test_print_matrix_valid_values(mock_game, matrices, mock_method):
-    """
-    Tests, that with provided empty matrix, 'draw_rect' method would be called for all cells.
-    'fill_playground' would be called for non zero cells, therefore for a non empty matrix,
+    """Tests, that with provided empty matrix, 'draw_rect' method
+    would be called for all cells.
+    'fill_playground' would be called for non zero cells, therefore
+    for a non empty matrix,
     number of calls would be equal to the number of non zero cells.
     """
     mock_draw_rect = mock_method(Game, "draw_rect")

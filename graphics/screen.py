@@ -10,15 +10,11 @@ class Screen:
     last = None
 
     def __init__(self):
-        """
-        Initialization of font.
-        """
+        """Initialization of font."""
         self.my_font = pg.font.SysFont("monospace", 30, bold="true")
 
     def create_menu(self, surf: Surface) -> None:
-        """
-        Creates menu, that is displayed at the start of the application.
-        """
+        """Creates menu, that is displayed at the start of the application."""
         surf.fill((0, 0, 0))
 
         self.menu_play = pg.draw.rect(surf, (0, 0, 255), (150, 120, 100, 40))
@@ -34,8 +30,8 @@ class Screen:
         surf.blit(label, (160, 245, 100, 40))
 
     def create_footer(self, surf: Surface) -> None:
-        """
-        Creates footer, that is visible while player is playing or if the simulation is running.
+        """Creates footer, that is visible
+        while player is playing or if the simulation is running.
         """
         self.back_button = pg.draw.rect(surf, (0, 0, 255), (0, 400, 100, 40))
         label = self.my_font.render("BACK", 1, (255, 255, 255))
@@ -48,9 +44,7 @@ class Screen:
     def handle_footer(
         self, x: int, y: int, game: Game, surf: Surface, monte_carlo: MonteCarlo
     ) -> None:
-        """
-        Handles footer interactions.
-        """
+        """Handles footer interactions."""
         if self.back_button.collidepoint(x, y):
             surf.fill((0, 0, 0))
             if game.player_screen:
@@ -88,9 +82,7 @@ class Screen:
     def handle_menu(
         self, x: int, y: int, game: Game, surf: Surface, monte_carlo: MonteCarlo
     ) -> None:
-        """
-        Handles menu interactions.
-        """
+        """Handles menu interactions."""
         if self.menu_play.collidepoint(x, y):
             surf.fill((0, 0, 0))
             self.create_footer(surf)
@@ -110,16 +102,12 @@ class Screen:
             pg.event.post(pg.event.Event(pg.QUIT))
 
     def show_game_over(self, surf: Surface) -> None:
-        """
-        Displays text 'game over' over the window.
-        """
+        """Displays text 'game over' over the window."""
         pg.draw.rect(surf, (255, 255, 255), (100, 170, 200, 60))
         label = self.my_font.render("GAME OVER", 1, (0, 0, 255))
         surf.blit(label, (120, 185, 100, 60))
 
     def update_score_view(self, score: int) -> None:
-        """
-        Updates score caption with game score.
-        """
+        """Updates score caption with game score."""
         score_view = "2048 score: " + str(score)
         pg.display.set_caption(score_view)
