@@ -20,7 +20,6 @@ class MonteCarlo:
         self.score_down = [0]
         self.score_left = [0]
         self.score_right = [0]
-        self.score_list_all = []
         self.score_all = {}
         self.screen = False
         self.stop_event = threading.Event()

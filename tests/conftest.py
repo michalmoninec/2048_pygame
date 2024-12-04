@@ -200,7 +200,7 @@ def mc_init_attrs():
             "score_down": [0],
             "score_left": [0],
             "score_right": [0],
-            "score_list_all": [],
+            "score_all": {},
             "screen": False,
             "sim_running": False,
             "simulation_thread": None,
