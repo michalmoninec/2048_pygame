@@ -1,15 +1,17 @@
 import pygame
 
-from typing import Any
+from typing import Any, List
 
 from game import Game
 
 
-def copy_matrix(matrix):
+def copy_matrix(matrix: List[List[int]]) -> List[List[int]]:
+    """Copies matrix and returns it."""
     return [row[:] for row in matrix]
 
 
-def empty_matrix():
+def empty_matrix() -> List[List[int]]:
+    """Returns empty matrix."""
     return [[0 for _ in range(4)] for _ in range(4)]
 
 

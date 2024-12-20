@@ -1,13 +1,12 @@
 from simulations.monte_carlo import MonteCarlo
 
 
-def get_attribute(obj: object, name: str):
+def get_attribute(obj: object, name: str) -> Any:
     """Returns object attribute value if there is object attribute
     with provided name, otherwise returns None.
     """
-    if obj is not None:
-        return getattr(obj, name, None)
-    return None
+
+    return getattr(obj, name, None)
 
 
 def test_init(mc_init_attrs: dict):

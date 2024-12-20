@@ -9,17 +9,24 @@ from graphics.screen import Screen
 from simulations.monte_carlo import MonteCarlo
 
 
+UP_KEYS = (pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT)
+MONTE_CARLO_ITERATIONS = 100
+WINDOW_SIZE = (400, 440)
+CAPTION_TEMPLATE = "2048 score: {}"
+
+
 def main() -> None:
-    """Initialization setup for pygame, screen, game and mt simultaion classes.
+    """Initialization setup for pygame, screen, game and Monte Carlo simulation classes.
     Runs main loop with initialized classes.
     """
     try:
         pg.init()
-    except:
+    except pg.error as e:
+        print(f"Failed to initialize pygame: {e}")
         exit()
 
     screen = Screen()
-    monte_carlo = MonteCarlo()
+    monte_carlo = MonteCarlo(MONTE_CARLO_ITERATIONS)
     surf = surface_setup(screen, 0)
     game = Game(surf)
     game.place_initial_random_tiles()
@@ -27,56 +34,64 @@ def main() -> None:
     main_loop(screen, game, monte_carlo, surf)
 
 
-def main_loop(screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface):
+def main_loop(
+    screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface
+) -> None:
     """Main loop handles game state, event handling, simulation state."""
     running = True
     while running:
-        if game.player_start:
-            if screen.last == "simulation":
-                screen.last = "game"
-                game.reset_matrix()
-                # game.print_matrix(surf)
-                game.game_over = False
-            game.caption_score = game.score
-            game.print_matrix()
-
-        if game.game_over and (game.player_screen or monte_carlo.screen):
-            screen.show_game_over(surf)
-
-        if monte_carlo.screen and not monte_carlo.sim_running:
-            monte_carlo.stop_event.clear()
-            monte_carlo.simulation_thread = threading.Thread(
-                target=mt_simulation, args=(monte_carlo, game, surf, screen)
-            )
-            monte_carlo.simulation_thread.start()
-            monte_carlo.sim_running = True
-
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                running = False
-                pg.quit()
-                exit()
-            if event.type == pg.KEYDOWN:
-                if event.key in (
-                    pg.K_UP,
-                    pg.K_DOWN,
-                    pg.K_LEFT,
-                    pg.K_RIGHT,
-                ):
-                    game.run_game(event.key)
-
-            if event.type == pg.MOUSEBUTTONDOWN:
-                x, y = pg.mouse.get_pos()
-
-                if game.player_start or monte_carlo.screen:
-                    screen.create_footer(surf)
-                    screen.handle_footer(x, y, game, surf, monte_carlo)
-                else:
-                    screen.handle_menu(x, y, game, surf, monte_carlo)
-
+        handle_game_state(screen, game, monte_carlo, surf)
+        running = handle_events(screen, game, monte_carlo, surf)
         screen.update_score_view(game.caption_score)
         pg.display.update()
         pg.display.flip()
+
+
+def handle_game_state(
+    screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface
+) -> None:
+    """Handle the game state transitions."""
+    if game.player_start:
+        if screen.last == "simulation":
+            screen.last = "game"
+            game.reset_matrix()
+            game.game_over = False
+        game.caption_score = game.score
+        game.print_matrix()
+
+    if game.game_over and (game.player_screen or monte_carlo.screen):
+        screen.show_game_over(surf)
+
+    if monte_carlo.screen and not monte_carlo.sim_running:
+        monte_carlo.stop_event.clear()
+        monte_carlo.simulation_thread = threading.Thread(
+            target=mt_simulation, args=(monte_carlo, game, surf, screen)
+        )
+        monte_carlo.simulation_thread.start()
+        monte_carlo.sim_running = True
+
+
+def handle_events(
+    screen: Screen, game: Game, monte_carlo: MonteCarlo, surf: Surface
+) -> bool:
+    """Handle pygame events."""
+    running = True
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
+            pg.quit()
+            exit()
+        if event.type == pg.KEYDOWN:
+            if event.key in UP_KEYS:
+                game.run_game(event.key)
+        if event.type == pg.MOUSEBUTTONDOWN:
+            x, y = pg.mouse.get_pos()
+            if game.player_start or monte_carlo.screen:
+                screen.create_footer(surf)
+                screen.handle_footer(x, y, game, surf, monte_carlo)
+            else:
+                screen.handle_menu(x, y, game, surf, monte_carlo)
+    return running
 
 
 def mt_simulation(
@@ -92,9 +107,9 @@ def mt_simulation(
         and not monte_carlo.stop_event.is_set()
     ):
         score = copy.deepcopy(game.score)
-        dir = monte_carlo.get_direction(game)
+        direction = monte_carlo.get_direction(game)
         game.score = score
-        if game.move_in_direction(dir, game.matrix):
+        if game.move_in_direction(direction, game.matrix):
             game.place_random_tile()
         game.start_random = True
         game.print_matrix()
@@ -106,12 +121,12 @@ def mt_simulation(
 
 
 def surface_setup(screen: Screen, score: int) -> Surface:
-    """Setup helper for inital screen creation, window resolution and score cap."""
+    """Setup helper for initial screen creation, window resolution and score cap."""
     pg.display.init()
-    score_view = "2048 score: " + str(score)
+    score_view = CAPTION_TEMPLATE.format(score)
     pg.display.set_caption(score_view)
 
-    surf = pg.display.set_mode((400, 440))
+    surf = pg.display.set_mode(WINDOW_SIZE)
     screen.create_menu(surf)
 
     return surf

@@ -1,20 +1,30 @@
+from typing import Any, Callable
 import pygame, pytest
 
 from game import Game
 from graphics.screen import Screen
 from main import main_loop
-from tests.conftest import copy_matrix
+from simulations.monte_carlo import MonteCarlo
+from tests.conftest import copy_matrix, mock_wrapper
 
 
 def post_quit() -> None:
+    """Posts pygame QUIT event."""
     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
 
 def post_key(key: pygame.key) -> None:
+    """Posts pygame KEYDOWN event."""
     pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=key))
 
 
-def test_main_loop_quit_game(mock_game, mcarlo, mock_surface, mock_method, screen):
+def test_main_loop_quit_game(
+    mock_game: Game,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
+    mock_method: Callable[..., Any],
+    screen: Screen,
+):
     """Tests, that QUIT pygame event raises SystemExit."""
     mock_update = mock_method(pygame.display, "update")
     mock_flip = mock_method(pygame.display, "flip")
@@ -32,7 +42,13 @@ def test_main_loop_quit_game(mock_game, mcarlo, mock_surface, mock_method, scree
 
 
 def test_main_loop_valid_move_up(
-    mock_game, mock_method, matrices, screen, mcarlo, mock_surface, mock_graphics
+    mock_game: Game,
+    mock_method: Callable[..., Any],
+    matrices: dict[str, Any],
+    screen: Screen,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
+    mock_graphics: None,
 ):
     """Tests, that with provided valid movement, run_game method runs.
     update_score_view method of Screen class is patched to raise SystemExit and leave while loop.
@@ -59,7 +75,13 @@ def test_main_loop_valid_move_up(
 
 
 def test_main_loop_valid_move_down(
-    mock_game, mock_method, matrices, screen, mcarlo, mock_surface, mock_graphics
+    mock_game: Game,
+    mock_method: Callable[..., Any],
+    matrices: dict[str, Any],
+    screen: Screen,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
+    mock_graphics: None,
 ):
     """Tests, that with provided valid movement, run_game method runs.
     update_score_view method of Screen class is patched to raise SystemExit and leave while loop.
@@ -86,7 +108,13 @@ def test_main_loop_valid_move_down(
 
 
 def test_main_loop_valid_move_left(
-    mock_game, mock_method, matrices, screen, mcarlo, mock_surface, mock_graphics
+    mock_game: Game,
+    mock_method: Callable[..., Any],
+    matrices: dict[str, Any],
+    screen: Screen,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
+    mock_graphics: None,
 ):
     """Tests, that with provided valid movement, run_game method runs.
     update_score_view method of Screen class is patched to raise SystemExit and leave while loop.
@@ -113,7 +141,13 @@ def test_main_loop_valid_move_left(
 
 
 def test_main_loop_valid_move_right(
-    mock_game, mock_method, matrices, screen, mcarlo, mock_surface, mock_graphics
+    mock_game: Game,
+    mock_method: Callable[..., Any],
+    matrices: dict[str, Any],
+    screen: Screen,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
+    mock_graphics: None,
 ):
     """Tests, that with provided valid movement, run_game method runs.
     update_score_view method of Screen class is patched to raise SystemExit and leave while loop.
@@ -140,7 +174,13 @@ def test_main_loop_valid_move_right(
 
 
 def test_main_loop_end_move_left(
-    mock_game, matrices, mock_method, mock_graphics, mcarlo, screen, mock_surface
+    mock_game: Game,
+    matrices: dict[str, Any],
+    mock_method: Callable[..., Any],
+    mock_graphics: None,
+    mcarlo: MonteCarlo,
+    screen: Screen,
+    mock_surface: pygame.Surface,
 ):
     """Tests, that with provided end matrix, movement is
     possible, but afterwards game over occurs.
@@ -163,7 +203,13 @@ def test_main_loop_end_move_left(
 
 
 def test_main_loop_end_move_right(
-    mock_game, matrices, mock_method, mock_graphics, mcarlo, screen, mock_surface
+    mock_game: Game,
+    matrices: dict[str, Any],
+    mock_method: Callable[..., Any],
+    mock_graphics: None,
+    mcarlo: MonteCarlo,
+    screen: Screen,
+    mock_surface: pygame.Surface,
 ):
     """Tests, that with provided end matrix, movement is
     possible, but afterwards game over occurs.
@@ -186,7 +232,13 @@ def test_main_loop_end_move_right(
 
 
 def test_main_loop_end_move_up(
-    mock_game, matrices, mock_method, mock_graphics, mcarlo, screen, mock_surface
+    mock_game: Game,
+    matrices: dict[str, Any],
+    mock_method: Callable[..., Any],
+    mock_graphics: None,
+    mcarlo: MonteCarlo,
+    screen: Screen,
+    mock_surface: pygame.Surface,
 ):
     """Tests, that with provided end matrix, movement is
     possible, but afterwards game over occurs.
@@ -209,7 +261,13 @@ def test_main_loop_end_move_up(
 
 
 def test_main_loop_end_move_down(
-    mock_game, matrices, mock_method, mock_graphics, mcarlo, screen, mock_surface
+    mock_game: Game,
+    matrices: dict[str, Any],
+    mock_method: Callable[..., Any],
+    mock_graphics: None,
+    mcarlo: MonteCarlo,
+    screen: Screen,
+    mock_surface: pygame.Surface,
 ):
     """Tests, that with provided end matrix, movement is
     possible, but afterwards game over occurs.

@@ -1,9 +1,11 @@
 import pygame, pytest
 
-from typing import List
+from typing import Any, Callable, List
 
+from game import Game
 from graphics.screen import Screen
-from tests.conftest import copy_matrix
+from simulations.monte_carlo import MonteCarlo
+from tests.conftest import copy_matrix, mock_wrapper
 from main import main_loop
 
 
@@ -23,13 +25,13 @@ def event_seq() -> List[pygame.event.Event]:
 
 
 def test_mousebuttondown_menu_trigger(
-    mock_game,
-    mock_graphics,
-    mock_method,
-    matrices,
-    screen,
-    mcarlo,
-    mock_surface,
+    mock_game: Game,
+    mock_graphics: None,
+    mock_method: Callable[..., Any],
+    matrices: dict[str, Any],
+    screen: Screen,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
 ):
     """Tests, that after mousebutton event, application reacts correctly.
     In this test, only handle_menu should be triggered.
@@ -51,13 +53,13 @@ def test_mousebuttondown_menu_trigger(
 
 
 def test_mousebuttondown_footer_trigger_player(
-    mock_game,
-    mock_graphics,
-    mock_method,
-    matrices,
-    screen,
-    mcarlo,
-    mock_surface,
+    mock_game: Game,
+    mock_graphics: None,
+    mock_method: Callable[..., Any],
+    matrices: dict[str, Any],
+    screen: Screen,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
 ):
     """Tests, that after mousebutton event, application reacts correctly.
     In this test, only handle_footer should be triggered.
@@ -81,13 +83,13 @@ def test_mousebuttondown_footer_trigger_player(
 
 
 def test_mousebuttondown_footer_trigger_mcarlo(
-    mock_game,
-    mock_graphics,
-    mock_method,
-    matrices,
-    screen,
-    mcarlo,
-    mock_surface,
+    mock_game: Game,
+    mock_graphics: None,
+    mock_method: Callable[..., Any],
+    matrices: dict[str, Any],
+    screen: Screen,
+    mcarlo: MonteCarlo,
+    mock_surface: pygame.Surface,
 ):
     """Tests, that after mousebutton event, application reacts correctly.
     In this test, only handle_footer should be triggered.

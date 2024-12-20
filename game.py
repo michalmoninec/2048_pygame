@@ -247,13 +247,11 @@ class Game:
         return False
 
     def draw_rect(self, surf: Surface, color: Tuple, size: Tuple):
-        pygame.draw.rect(
-            surf,
-            color,
-            size,
-        )
+        """Draws rectangle on the surface."""
+        pygame.draw.rect(surf, color, size)
 
     def fill_playground(self, col, row):
+        """Fills cell with corresponding number color and background."""
         label = self.myfont.render(str(self.matrix[col][row]), 1, (0, 0, 0))
         label_width, label_height = label.get_size()
         self.surf.blit(

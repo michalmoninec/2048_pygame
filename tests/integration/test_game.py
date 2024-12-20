@@ -1,17 +1,18 @@
+from typing import Any, Callable, List
 import pytest
 
 from game import Game
 
-from tests.conftest import copy_matrix, non_zero_cells
+from tests.conftest import copy_matrix, mock_wrapper, non_zero_cells
 
 
-def test_run_game_value_error(mock_game):
+def test_run_game_value_error(mock_game: Game):
     """Tests that None direction raises ValueError."""
     with pytest.raises(ValueError):
         assert mock_game.run_game(None)
 
 
-def test_run_not_start(mock_game, dirs):
+def test_run_not_start(mock_game: Game, dirs: List[int]):
     """Tests that when attribute 'player_start' is False function returns False,
     but wont affect attribute 'game_over'.
     """
@@ -20,7 +21,7 @@ def test_run_not_start(mock_game, dirs):
         assert mock_game.game_over == False
 
 
-def test_run_game_all_invalid_moves(mock_game, dirs):
+def test_run_game_all_invalid_moves(mock_game: Game, dirs: List[int]):
     """Tests that for True value of atribute 'player_start' function
     evaluates movement in provided direction.
     Based on matrix with no possible movement function should return False
@@ -32,7 +33,12 @@ def test_run_game_all_invalid_moves(mock_game, dirs):
         assert mock_game.game_over == True
 
 
-def test_run_game_all_valid_moves(mock_game, dirs, matrices, mock_method):
+def test_run_game_all_valid_moves(
+    mock_game: Game,
+    dirs: List[int],
+    matrices: dict[str, Any],
+    mock_method: Callable[..., Any],
+):
     """Tests that for True value of atribute 'player_start' function
     evaluates movement in provided direction.
     Based od matrix with possible movement in all directions function should:
@@ -60,7 +66,12 @@ def test_run_game_all_valid_moves(mock_game, dirs, matrices, mock_method):
     assert mocked_print_label.call_count == 0
 
 
-def test_run_game_all_valid_print_win(mock_game, dirs, matrices, mock_method):
+def test_run_game_all_valid_print_win(
+    mock_game: Game,
+    dirs: List[int],
+    matrices: dict[str, Any],
+    mock_method: Callable[..., Any],
+):
     """Tests that for True value of atribute 'player_start' function evaluates
     movement in provided direction.
     Based od matrix with possible movement in all directions function should:
@@ -85,7 +96,7 @@ def test_run_game_all_valid_print_win(mock_game, dirs, matrices, mock_method):
     assert mocked_crit.call_count == len(dirs)
 
 
-def test_print_matrix_no_values(mock_game, mock_method):
+def test_print_matrix_no_values(mock_game: Game, mock_method: Callable[..., Any]):
     """Tests, that with provided empty matrix, 'draw_rect' method
     would be called for all cells.
     'fill_playground' would be called for non zero cells, therefore
@@ -100,7 +111,9 @@ def test_print_matrix_no_values(mock_game, mock_method):
     assert mock_fill_playground.call_count == 0
 
 
-def test_print_matrix_valid_values(mock_game, matrices, mock_method):
+def test_print_matrix_valid_values(
+    mock_game: Game, matrices: dict[str, Any], mock_method: Callable[..., Any]
+):
     """Tests, that with provided empty matrix, 'draw_rect' method
     would be called for all cells.
     'fill_playground' would be called for non zero cells, therefore

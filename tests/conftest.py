@@ -1,4 +1,4 @@
-from typing import Any
+from typing import List
 import pygame
 import pytest
 import threading
@@ -184,7 +184,7 @@ def matrices():
 
 
 @pytest.fixture
-def dirs():
+def dirs() -> List[int]:
     return [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]
 
 
